@@ -25,13 +25,15 @@ public class Controller implements Initializable
     @FXML RadioButton oneThreeA6H, oneThreeANon6H, oneThreeNon6H, oneTwo, A20cBoard;
     @FXML RadioButton delkinRadio, hcRadio, otherCardRadio;
     @FXML RadioButton blueBattery, silverBattery, noneBattery;
+    @FXML RadioButton switchNoClasp, switchNewClasp, jumperNewClasp, jumperOldClasp;
 
-    @FXML TextField connectionField, serialNumField, caseNumField, otherCardField;
+    @FXML TextField connectionField, serialNumField, caseNumField, otherCardField, initialsField;
 
-    @FXML CheckBox POEPowerBox, adapterPowerBox, neitherPowerBox;
     @FXML CheckBox wifiCommBox, gprsBox;
 
     @FXML Label connectionLabel;
+
+    @FXML Button connectBtn, diagnosesBtn, solutionsBtn;
 
     ToggleGroup modelGroup = new ToggleGroup();
     ToggleGroup readerGroup = new ToggleGroup();
@@ -43,6 +45,7 @@ public class Controller implements Initializable
     ToggleGroup motherboardGroup = new ToggleGroup();
     ToggleGroup sdCardGroup = new ToggleGroup();
     ToggleGroup batteryGroup = new ToggleGroup();
+    ToggleGroup interfaceGroup = new ToggleGroup();
 
     Set<RadioButton> modelSet;
     Set<RadioButton> readerSet;
@@ -54,6 +57,7 @@ public class Controller implements Initializable
     Set<RadioButton> motherboardSet;
     Set<RadioButton> sdCardSet;
     Set<RadioButton> batterySet;
+    Set<RadioButton> interfaceBoardSet;
 
 
 
@@ -72,8 +76,10 @@ public class Controller implements Initializable
         motherboardSet = new HashSet<>(Arrays.asList(oneThreeA6H, oneThreeANon6H, oneThreeNon6H, oneTwo, A20cBoard));
         sdCardSet = new HashSet<>(Arrays.asList(delkinRadio, hcRadio, otherCardRadio));
         batterySet = new HashSet<>(Arrays.asList(blueBattery, silverBattery, noneBattery));
+        interfaceBoardSet = new HashSet<>(Arrays.asList(switchNoClasp, switchNewClasp, jumperNewClasp, jumperOldClasp));
 
 
+        connectionLabel.setVisible(false);
 
         for(RadioButton modelRadio : modelSet)
         {
@@ -93,6 +99,7 @@ public class Controller implements Initializable
         for(RadioButton fpuSizeRadio : fpuSizeSet)
         {
             fpuSizeRadio.setToggleGroup(fpuSizeGroup);
+            fpuSizeRadio.setVisible(false);
         }
 
         for(RadioButton connectionRadio : connectionSet)
@@ -108,11 +115,13 @@ public class Controller implements Initializable
         for(RadioButton mbRadio : motherboardSet)
         {
             mbRadio.setToggleGroup(motherboardGroup);
+            mbRadio.setVisible(false);
         }
 
         for(RadioButton cbRadio : coreboardSet)
         {
             cbRadio.setToggleGroup(coreboardGroup);
+            cbRadio.setVisible(false);
         }
 
         for(RadioButton sdRadio : sdCardSet)
@@ -125,26 +134,11 @@ public class Controller implements Initializable
             batteryRadio.setToggleGroup(batteryGroup);
         }
 
+        for(RadioButton interfaceRadio : interfaceBoardSet)
+        {
+            interfaceRadio.setToggleGroup(interfaceGroup);
+        }
 
-        casThreeK.setVisible(false);
-        casTenK.setVisible(false);
-        suprNineK.setVisible(false);
-        suprTwentyFiveK.setVisible(false);
-
-
-        sdBoard.setVisible(false);
-        threeWire.setVisible(false);
-        twoWire.setVisible(false);
-        unmodified.setVisible(false);
-        A20mBoard.setVisible(false);
-
-        oneThreeA6H.setVisible(false);
-        oneThreeANon6H.setVisible(false);
-        oneThreeNon6H.setVisible(false);
-        oneTwo.setVisible(false);
-        A20cBoard.setVisible(false);
-
-        connectionLabel.setVisible(false);
 
         modelGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
         {
@@ -233,7 +227,6 @@ public class Controller implements Initializable
                 }
             }
         });
-
     }
 
     @FXML
@@ -289,18 +282,21 @@ public class Controller implements Initializable
             batteryRadio.setSelected(false);
         }
 
+        for(RadioButton interfaceRadio : interfaceBoardSet)
+        {
+            interfaceRadio.setSelected(false);
+        }
+
 
         caseNumField.setText("");
         serialNumField.setText("");
         connectionField.setText("");
         otherCardField.setText("");
+        initialsField.setText("");
 
 
         wifiCommBox.setSelected(false);
         gprsBox.setSelected(false);
 
-        POEPowerBox.setSelected(false);
-        adapterPowerBox.setSelected(false);
-        neitherPowerBox.setSelected(false);
     }
 }
