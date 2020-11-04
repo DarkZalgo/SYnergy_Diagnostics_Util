@@ -3,7 +3,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.Controller">
+<GridPane alignment="center" hgap="10" vgap="10" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.MainController">
    <children>
       <TabPane>
          <tabs>
@@ -85,7 +85,7 @@
                         <RadioButton fx:id="jumperNewClasp" layoutX="21.0" layoutY="339.0" mnemonicParsing="false" text="Jumper New Clasp" />
                         <RadioButton fx:id="jumperOldClasp" layoutX="21.0" layoutY="363.0" mnemonicParsing="false" text="Jumper Old Clasp" />
                         <Separator layoutY="389.0" prefWidth="192.0" />
-                        <Button fx:id="diagnosesBtn" layoutX="247.0" layoutY="529.0" mnemonicParsing="false" text="Diagnoses" />
+                        <Button fx:id="diagnosesBtn" layoutX="247.0" layoutY="529.0" mnemonicParsing="false" onAction="#sendData" text="Diagnoses" />
                         <Button fx:id="solutionsBtn" layoutX="498.0" layoutY="529.0" mnemonicParsing="false" text="Solutions" />
                      </children>
                   </Pane>

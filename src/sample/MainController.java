@@ -2,10 +2,18 @@ package sample;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -13,8 +21,18 @@ import java.util.ResourceBundle;
 import java.util.Set;
 
 
-public class Controller implements Initializable
+public class MainController implements Initializable
 {
+    @FXML TextField serialNumField, caseNumField, initialsField;
+    @FXML TextField connectionField;
+    @FXML TextField otherCardField;
+
+    @FXML CheckBox wifiCommBox, gprsBox;
+
+    @FXML Label connectionLabel;
+
+    @FXML Button connectBtn, diagnosesBtn, solutionsBtn;
+
     @FXML RadioButton SY_2416, SY_A20, SY_X;
     @FXML RadioButton barcodeReader, hidReader, iClassReader, magneticReader, proximityReader, noneReader, mifareReader;
     @FXML RadioButton casFPU, suprFPU, noneFPU;
@@ -26,14 +44,6 @@ public class Controller implements Initializable
     @FXML RadioButton delkinRadio, hcRadio, otherCardRadio;
     @FXML RadioButton blueBattery, silverBattery, noneBattery;
     @FXML RadioButton switchNoClasp, switchNewClasp, jumperNewClasp, jumperOldClasp;
-
-    @FXML TextField connectionField, serialNumField, caseNumField, otherCardField, initialsField;
-
-    @FXML CheckBox wifiCommBox, gprsBox;
-
-    @FXML Label connectionLabel;
-
-    @FXML Button connectBtn, diagnosesBtn, solutionsBtn;
 
     ToggleGroup modelGroup = new ToggleGroup();
     ToggleGroup readerGroup = new ToggleGroup();
@@ -58,8 +68,6 @@ public class Controller implements Initializable
     Set<RadioButton> sdCardSet;
     Set<RadioButton> batterySet;
     Set<RadioButton> interfaceBoardSet;
-
-
 
 
     @Override
@@ -294,9 +302,32 @@ public class Controller implements Initializable
         otherCardField.setText("");
         initialsField.setText("");
 
+        connectionLabel.setVisible(false);
+
 
         wifiCommBox.setSelected(false);
         gprsBox.setSelected(false);
 
+    }
+
+    @FXML
+    private void sendData(ActionEvent event)
+    {
+        Node node = (Node) event.getSource();
+        Data obj = new Data("Stuff and things",1231412);
+        Stage stage = (Stage) node.getScene().getWindow();
+        try
+        {
+
+            Parent root = FXMLLoader.load(getClass().getResource("diagnoses.fxml"));
+
+            stage.setUserData(obj);
+
+            Scene scene = new Scene(root);
+
+            stage.setScene(scene);
+
+            stage.show();
+        }catch (IOException exception){ exception.printStackTrace(); }
     }
 }
