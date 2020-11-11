@@ -14,6 +14,7 @@ public class SYDiagnostics extends Application
         Parent root = FXMLLoader.load(getClass().getResource("main.fxml"));
         primaryStage.setTitle("SYnergy Diagnostics");
         primaryStage.setScene(new Scene(root, 850, 600));
+        primaryStage.setResizable(false);
         primaryStage.show();
 
 

@@ -10,8 +10,10 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 import java.io.IOException;
 import java.net.URL;
@@ -26,6 +28,7 @@ public class MainController implements Initializable
     @FXML TextField serialNumField, caseNumField, initialsField;
     @FXML TextField connectionField;
     @FXML TextField otherCardField;
+    @FXML TextField macField;
 
     @FXML CheckBox wifiCommBox, gprsBox;
 
@@ -41,7 +44,7 @@ public class MainController implements Initializable
     @FXML RadioButton POEComm, ethComm;
     @FXML RadioButton sdBoard, threeWire, twoWire, unmodified, A20mBoard;
     @FXML RadioButton oneThreeA6H, oneThreeANon6H, oneThreeNon6H, oneTwo, A20cBoard;
-    @FXML RadioButton delkinRadio, hcRadio, otherCardRadio;
+    @FXML RadioButton delkinRadio, noneCardRadio, otherCardRadio;
     @FXML RadioButton blueBattery, silverBattery, noneBattery;
     @FXML RadioButton switchNoClasp, switchNewClasp, jumperNewClasp, jumperOldClasp;
 
@@ -57,6 +60,18 @@ public class MainController implements Initializable
     ToggleGroup batteryGroup = new ToggleGroup();
     ToggleGroup interfaceGroup = new ToggleGroup();
 
+    ToggleData modelData = new ToggleData("Clock Model","",false,true);
+    ToggleData readerData = new ToggleData("Reader Type","",false,true);
+    ToggleData fpuTypeData = new ToggleData("FPU Type","",false,true);
+    ToggleData fpuSizeData = new ToggleData("Clock Model","",false,false);
+    ToggleData connectionData = new ToggleData("Connection Type","",false,false);
+    ToggleData communicationData = new ToggleData("Communication Type","",false,true);
+    ToggleData coreboardData = new ToggleData("Coreboard Type","",false,true);
+    ToggleData motherboardData = new ToggleData("Motherboard Type","",false,true);
+    ToggleData sdCardData = new ToggleData("SD Card Type","",false,true);
+    ToggleData batteryData = new ToggleData("Battery Type","",false,true);
+    ToggleData interfaceData = new ToggleData("Interface Board Type","",false,true);
+
     Set<RadioButton> modelSet;
     Set<RadioButton> readerSet;
     Set<RadioButton> fpuTypeSet;
@@ -68,6 +83,10 @@ public class MainController implements Initializable
     Set<RadioButton> sdCardSet;
     Set<RadioButton> batterySet;
     Set<RadioButton> interfaceBoardSet;
+
+    Set<ToggleGroup> toggleGroupSet;
+
+    boolean completion;
 
 
     @Override
@@ -82,9 +101,25 @@ public class MainController implements Initializable
         communicationSet = new HashSet<>(Arrays.asList(POEComm, ethComm));
         coreboardSet = new HashSet<>(Arrays.asList(sdBoard, threeWire, twoWire, unmodified, A20mBoard));
         motherboardSet = new HashSet<>(Arrays.asList(oneThreeA6H, oneThreeANon6H, oneThreeNon6H, oneTwo, A20cBoard));
-        sdCardSet = new HashSet<>(Arrays.asList(delkinRadio, hcRadio, otherCardRadio));
+        sdCardSet = new HashSet<>(Arrays.asList(delkinRadio, noneCardRadio, otherCardRadio));
         batterySet = new HashSet<>(Arrays.asList(blueBattery, silverBattery, noneBattery));
         interfaceBoardSet = new HashSet<>(Arrays.asList(switchNoClasp, switchNewClasp, jumperNewClasp, jumperOldClasp));
+
+        toggleGroupSet = new HashSet<>(Arrays.asList(modelGroup, readerGroup, fpuTypeGroup, fpuSizeGroup,
+                connectionGroup, communicationGroup, coreboardGroup, motherboardGroup, sdCardGroup,
+                batteryGroup, interfaceGroup));
+
+        modelGroup.setUserData(modelData);
+        readerGroup.setUserData(readerData);
+        fpuTypeGroup.setUserData(fpuTypeData);
+        fpuSizeGroup.setUserData(fpuSizeData);
+        connectionGroup.setUserData(connectionData);
+        communicationGroup.setUserData(communicationData);
+        coreboardGroup.setUserData(coreboardData);
+        motherboardGroup.setUserData(motherboardData);
+        sdCardGroup.setUserData(sdCardData);
+        batteryGroup.setUserData(batteryData);
+        interfaceGroup.setUserData(interfaceData);
 
 
         connectionLabel.setVisible(false);
@@ -120,16 +155,16 @@ public class MainController implements Initializable
             commRadio.setToggleGroup(communicationGroup);
         }
 
-        for(RadioButton mbRadio : motherboardSet)
-        {
-            mbRadio.setToggleGroup(motherboardGroup);
-            mbRadio.setVisible(false);
-        }
-
         for(RadioButton cbRadio : coreboardSet)
         {
             cbRadio.setToggleGroup(coreboardGroup);
             cbRadio.setVisible(false);
+        }
+
+        for(RadioButton mbRadio : motherboardSet)
+        {
+            mbRadio.setToggleGroup(motherboardGroup);
+            mbRadio.setVisible(false);
         }
 
         for(RadioButton sdRadio : sdCardSet)
@@ -153,6 +188,16 @@ public class MainController implements Initializable
             @Override
             public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
             {
+                if (modelGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) modelGroup.getSelectedToggle();
+
+                    modelData.setToggled(true);
+                    modelData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+
                 if (modelGroup.getSelectedToggle() == SY_A20 || modelGroup.getSelectedToggle() == SY_X)
                 {
                     A20cBoard.setVisible(true);
@@ -186,12 +231,40 @@ public class MainController implements Initializable
             }
         });
 
+        readerGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
+            {
+                if (readerGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) readerGroup.getSelectedToggle();
+
+                    readerData.setToggled(true);
+                    readerData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+
+            }
+        });
+
         fpuTypeGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
         {
             @Override
             public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
             {
-                if (fpuTypeGroup.getSelectedToggle() == casFPU)
+                if (fpuTypeGroup.getSelectedToggle() != null)
+                {
+                    RadioButton tmpBtn = (RadioButton) fpuTypeGroup.getSelectedToggle();
+
+                    fpuTypeData.setToggled(true);
+                    fpuTypeData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+
+               if (fpuTypeGroup.getSelectedToggle() == casFPU)
                 {
                     casThreeK.setVisible(true);
                     casTenK.setVisible(true);
@@ -218,28 +291,176 @@ public class MainController implements Initializable
             }
         });
 
+        fpuSizeGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
+            {
+                if (fpuSizeGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) fpuTypeGroup.getSelectedToggle();
+
+                    fpuSizeData.setToggled(true);
+                    fpuSizeData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+            }
+        });
+
         connectionGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
         {
             @Override
             public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
             {
+
+                if (connectionGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) connectionGroup.getSelectedToggle();
+
+                    connectionData.setToggled(true);
+
+                    tmpBtn = null;
+                }
                 if (connectionGroup.getSelectedToggle() == sshRadio)
                 {
                     connectionLabel.setText("Enter IP Address");
                     connectionLabel.setVisible(true);
+
+                    connectionData.setToggleData("SSH");
                 }
                 else if(connectionGroup.getSelectedToggle() == serialRadio)
                 {
                     connectionLabel.setText("Enter COM Port");
                     connectionLabel.setVisible(true);
+
+                    connectionData.setToggleData("COM");
                 }
             }
         });
+
+        communicationGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
+            {
+                if (communicationGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) communicationGroup.getSelectedToggle();
+
+                    communicationData.setToggled(true);
+                    communicationData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+            }
+        });
+
+        coreboardGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
+            {
+                if (coreboardGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) coreboardGroup.getSelectedToggle();
+
+                    coreboardData.setToggled(true);
+                    coreboardData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+            }
+        });
+
+        motherboardGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
+            {
+                if (motherboardGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) motherboardGroup.getSelectedToggle();
+
+                    motherboardData.setToggled(true);
+                    motherboardData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+            }
+        });
+
+        sdCardGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
+            {
+                if (sdCardGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) sdCardGroup.getSelectedToggle();
+
+                    sdCardData.setToggled(true);
+                    sdCardData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+            }
+        });
+
+        batteryGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
+            {
+                if (batteryGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) batteryGroup.getSelectedToggle();
+
+                    batteryData.setToggled(true);
+                    batteryData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+            }
+        });
+
+        interfaceGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observableValue, Toggle toggle, Toggle t1)
+            {
+                if (interfaceGroup.getSelectedToggle()!= null)
+                {
+                    RadioButton tmpBtn = (RadioButton) interfaceGroup.getSelectedToggle();
+
+                    interfaceData.setToggled(true);
+                    interfaceData.setToggleData(tmpBtn.getText());
+
+                    tmpBtn = null;
+                }
+            }
+        });
+
+
+        macField.textProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1)
+            {
+                if (macField.getText().length() > 17)
+                {
+                    s = macField.getText().substring(0, 17);
+                    macField.setText(s);
+                }
+            }
+        });
+
     }
 
     @FXML
     private void refreshAll()
     {
+
         for(RadioButton modelRadio : modelSet)
         {
             modelRadio.setSelected(false);
@@ -308,26 +529,88 @@ public class MainController implements Initializable
         wifiCommBox.setSelected(false);
         gprsBox.setSelected(false);
 
+        modelData.clear();
+        readerData.clear();
+        fpuTypeData.clear();
+        fpuSizeData.clear();
+        connectionData.clear();
+        communicationData.clear();
+        coreboardData.clear();
+        motherboardData.clear();
+        sdCardData.clear();
+        batteryData.clear();
+        interfaceData.clear();
+
     }
 
     @FXML
-    private void sendData(ActionEvent event)
+    private boolean isComplete()
     {
-        Node node = (Node) event.getSource();
-        Data obj = new Data("Stuff and things",1231412);
-        Stage stage = (Stage) node.getScene().getWindow();
-        try
+        boolean completion = true;
+        ToggleData tmpData;
+        int count = 0;
+        String errorMsg = "The following sections are not completed\n";
+
+        for(ToggleGroup group : toggleGroupSet)
         {
+            tmpData = (ToggleData) group.getUserData();
 
-            Parent root = FXMLLoader.load(getClass().getResource("diagnoses.fxml"));
+            if (tmpData.isRequired() && !tmpData.isToggled())
+            {
+                count++;
 
-            stage.setUserData(obj);
+                errorMsg += tmpData.getGroupName()+"\n";
+            }
+        }
 
-            Scene scene = new Scene(root);
+        if(count > 0)
+        {
+            completion = false;
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setContentText(errorMsg);
+            errorAlert.show();
+        }
 
-            stage.setScene(scene);
+        return completion;
+    }
+    @FXML
+    private void addDiagnoses(ActionEvent event)
+    {
+        completion = isComplete();
+        if (completion)
+        {
+            SYnergyClock clock = new SYnergyClock();
 
-            stage.show();
-        }catch (IOException exception){ exception.printStackTrace(); }
+
+            StackPane diagnosesLayout = new StackPane();
+
+            Node node = (Node) event.getSource();
+            Stage diagnosesStage = new Stage();
+
+            diagnosesStage.setTitle("Diagnoses");
+
+            try {
+
+                Parent root = FXMLLoader.load(getClass().getResource("diagnoses.fxml"));
+
+                diagnosesStage.setScene(new Scene(root, 600, 400));
+                diagnosesStage.initModality(Modality.WINDOW_MODAL);
+
+                Window primaryWindow = node.getScene().getWindow();
+
+                diagnosesStage.initOwner(primaryWindow);
+
+                diagnosesStage.setX(primaryWindow.getX() + 200);
+                diagnosesStage.setY(primaryWindow.getY() + 100);
+
+                diagnosesStage.setUserData(clock);
+
+                diagnosesStage.setResizable(false);
+
+                diagnosesStage.show();
+            } catch (IOException exception) {
+                exception.printStackTrace();
+            }
+        }
     }
 }
