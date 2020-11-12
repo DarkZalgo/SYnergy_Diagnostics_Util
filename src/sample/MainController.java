@@ -10,7 +10,6 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.Window;
@@ -28,7 +27,7 @@ public class MainController implements Initializable
     @FXML TextField serialNumField, caseNumField, initialsField;
     @FXML TextField connectionField;
     @FXML TextField otherCardField;
-    @FXML TextField macField;
+    @FXML TextField macField, imageField, versionField;
 
     @FXML CheckBox wifiCommBox, gprsBox;
 
@@ -87,7 +86,7 @@ public class MainController implements Initializable
     Set<ToggleGroup> toggleGroupSet;
 
     boolean completion;
-
+    TimeClock SYnergy;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
@@ -193,7 +192,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) modelGroup.getSelectedToggle();
 
                     modelData.setToggled(true);
-                    modelData.setToggleData(tmpBtn.getText());
+                    modelData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
@@ -212,6 +211,8 @@ public class MainController implements Initializable
                     oneThreeANon6H.setVisible(false);
                     oneThreeNon6H.setVisible(false);
                     oneTwo.setVisible(false);
+
+                    motherboardData.clear();
                 }
                 else if(modelGroup.getSelectedToggle() == SY_2416)
                 {
@@ -227,6 +228,8 @@ public class MainController implements Initializable
                     oneThreeANon6H.setVisible(true);
                     oneThreeNon6H.setVisible(true);
                     oneTwo.setVisible(true);
+
+                    motherboardData.clear();
                 }
             }
         });
@@ -241,7 +244,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) readerGroup.getSelectedToggle();
 
                     readerData.setToggled(true);
-                    readerData.setToggleData(tmpBtn.getText());
+                    readerData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
@@ -259,7 +262,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) fpuTypeGroup.getSelectedToggle();
 
                     fpuTypeData.setToggled(true);
-                    fpuTypeData.setToggleData(tmpBtn.getText());
+                    fpuTypeData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
@@ -287,6 +290,7 @@ public class MainController implements Initializable
 
                     suprNineK.setVisible(false);
                     suprTwentyFiveK.setVisible(false);
+                    fpuSizeData.clear();
                 }
             }
         });
@@ -301,7 +305,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) fpuTypeGroup.getSelectedToggle();
 
                     fpuSizeData.setToggled(true);
-                    fpuSizeData.setToggleData(tmpBtn.getText());
+                    fpuSizeData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
@@ -349,7 +353,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) communicationGroup.getSelectedToggle();
 
                     communicationData.setToggled(true);
-                    communicationData.setToggleData(tmpBtn.getText());
+                    communicationData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
@@ -366,7 +370,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) coreboardGroup.getSelectedToggle();
 
                     coreboardData.setToggled(true);
-                    coreboardData.setToggleData(tmpBtn.getText());
+                    coreboardData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
@@ -383,7 +387,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) motherboardGroup.getSelectedToggle();
 
                     motherboardData.setToggled(true);
-                    motherboardData.setToggleData(tmpBtn.getText());
+                    motherboardData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
@@ -400,7 +404,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) sdCardGroup.getSelectedToggle();
 
                     sdCardData.setToggled(true);
-                    sdCardData.setToggleData(tmpBtn.getText());
+                    sdCardData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
@@ -417,7 +421,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) batteryGroup.getSelectedToggle();
 
                     batteryData.setToggled(true);
-                    batteryData.setToggleData(tmpBtn.getText());
+                    batteryData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
@@ -434,13 +438,12 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) interfaceGroup.getSelectedToggle();
 
                     interfaceData.setToggled(true);
-                    interfaceData.setToggleData(tmpBtn.getText());
+                    interfaceData.setToggleData(tmpBtn.getText().toUpperCase());
 
                     tmpBtn = null;
                 }
             }
         });
-
 
         macField.textProperty().addListener(new ChangeListener<String>()
         {
@@ -452,6 +455,33 @@ public class MainController implements Initializable
                     s = macField.getText().substring(0, 17);
                     macField.setText(s);
                 }
+            }
+        });
+
+        gprsBox.selectedProperty().addListener(new ChangeListener<Boolean>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observableValue, Boolean aBoolean, Boolean t1)
+            {
+             if (gprsBox.isSelected())
+             {
+                 for(RadioButton interfaceBtn : interfaceBoardSet)
+                 {
+
+                     interfaceBtn.setSelected(false);
+                     interfaceBtn.setDisable(true);
+                 }
+                 interfaceData.setToggled(true);
+                 interfaceData.setToggleData("GPRS");
+             }
+             else if(!gprsBox.isSelected())
+             {
+                 for(RadioButton interfaceBtn : interfaceBoardSet)
+                 {
+                     interfaceBtn.setDisable(false);
+                 }
+                 interfaceData.clear();
+             }
             }
         });
 
@@ -479,6 +509,7 @@ public class MainController implements Initializable
         for(RadioButton fpuSizeRadio : fpuSizeSet)
         {
             fpuSizeRadio.setSelected(false);
+            fpuSizeRadio.setVisible(false);
         }
 
         for(RadioButton connectionRadio : connectionSet)
@@ -494,11 +525,13 @@ public class MainController implements Initializable
         for(RadioButton mbRadio : motherboardSet)
         {
             mbRadio.setSelected(false);
+            mbRadio.setVisible(false);
         }
 
         for(RadioButton cbRadio : coreboardSet)
         {
             cbRadio.setSelected(false);
+            cbRadio.setVisible(false);
         }
 
         for(RadioButton sdRadio : sdCardSet)
@@ -516,15 +549,19 @@ public class MainController implements Initializable
             interfaceRadio.setSelected(false);
         }
 
-
         caseNumField.setText("");
         serialNumField.setText("");
-        connectionField.setText("");
-        otherCardField.setText("");
         initialsField.setText("");
 
-        connectionLabel.setVisible(false);
+        connectionField.setText("");
 
+        otherCardField.setText("");
+
+        macField.setText("");
+        imageField.setText("");
+        versionField.setText("");
+
+        connectionLabel.setVisible(false);
 
         wifiCommBox.setSelected(false);
         gprsBox.setSelected(false);
@@ -540,7 +577,7 @@ public class MainController implements Initializable
         sdCardData.clear();
         batteryData.clear();
         interfaceData.clear();
-
+        SYnergy.clear();
     }
 
     @FXML
@@ -579,20 +616,38 @@ public class MainController implements Initializable
         completion = isComplete();
         if (completion)
         {
-            SYnergyClock clock = new SYnergyClock();
+            if (gprsBox.isSelected())
+            {
+                communicationData.setToggleData(communicationData.getToggleData() + "/GPRS");
+            }
+            if (wifiCommBox.isSelected())
+            {
+                communicationData.setToggleData(communicationData.getToggleData() + "/WIFI");
+            }
 
+            InitialPartsData synergyParts = new InitialPartsData(
+                    modelData.getToggleData(),
+                    readerData.getToggleData(),
+                    fpuTypeData.getToggleData(),
+                    fpuSizeData.getToggleData(),
+                    communicationData.getToggleData(),
+                    coreboardData.getToggleData(),
+                    motherboardData.getToggleData(),
+                    sdCardData.getToggleData(),
+                    batteryData.getToggleData(),
+                    interfaceData.getToggleData(),
+                    macField.getText(),
+                    imageField.getText(),
+                    versionField.getText());
 
-            StackPane diagnosesLayout = new StackPane();
+            SYnergy = new TimeClock(synergyParts);
 
             Node node = (Node) event.getSource();
             Stage diagnosesStage = new Stage();
 
-            diagnosesStage.setTitle("Diagnoses");
-
             try {
-
-                Parent root = FXMLLoader.load(getClass().getResource("diagnoses.fxml"));
-
+                Parent root = FXMLLoader.load(getClass().getResource("diagnosesWindow.fxml"));
+                diagnosesStage.setTitle("Diagnoses");
                 diagnosesStage.setScene(new Scene(root, 600, 400));
                 diagnosesStage.initModality(Modality.WINDOW_MODAL);
 
@@ -603,12 +658,13 @@ public class MainController implements Initializable
                 diagnosesStage.setX(primaryWindow.getX() + 200);
                 diagnosesStage.setY(primaryWindow.getY() + 100);
 
-                diagnosesStage.setUserData(clock);
+                diagnosesStage.setUserData(SYnergy);
 
                 diagnosesStage.setResizable(false);
 
                 diagnosesStage.show();
-            } catch (IOException exception) {
+            } catch (IOException exception)
+            {
                 exception.printStackTrace();
             }
         }

@@ -25,9 +25,8 @@ public class DiagnosesController implements Initializable
 
         Stage stage = (Stage) node.getScene().getWindow();
 
-        Data data = (Data) stage.getUserData();
-        System.out.println(data.getStuff());
+       TimeClock clock = (TimeClock) stage.getUserData();
+        System.out.println(clock.getInitialParts().getModel());
 
-       //1 User user = (User) stage.getUserData();
     }
 }

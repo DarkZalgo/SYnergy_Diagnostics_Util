@@ -17,6 +17,12 @@ public class ToggleData
         this.isRequired = isRequired;
     }
 
+    public ToggleData(String toggleData, boolean isToggled)
+    {
+        this.toggleData = toggleData;
+        this.isToggled = isToggled;
+    }
+
     public void clear()
     {
         this.setToggled(false);
