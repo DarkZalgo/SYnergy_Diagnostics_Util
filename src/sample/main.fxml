@@ -86,7 +86,7 @@
                         <RadioButton fx:id="jumperOldClasp" layoutX="21.0" layoutY="363.0" mnemonicParsing="false" text="Jumper Old Clasp" />
                         <Separator layoutY="389.0" prefWidth="192.0" />
                         <Button fx:id="diagnosesBtn" layoutX="211.0" layoutY="529.0" mnemonicParsing="false" onAction="#addDiagnoses" text="Diagnoses" />
-                        <Button fx:id="solutionsBtn" layoutX="338.0" layoutY="529.0" mnemonicParsing="false" text="Solutions" />
+                        <Button fx:id="solutionsBtn" layoutX="325.0" layoutY="529.0" mnemonicParsing="false" text="Solutions" />
                         <Button layoutX="439.0" layoutY="529.0" mnemonicParsing="false" text="Parts Replaced" />
                         <TextField fx:id="macField" layoutX="685.0" layoutY="294.0" prefHeight="26.0" prefWidth="142.0" />
                         <TextField fx:id="imageField" layoutX="685.0" layoutY="327.0" prefHeight="26.0" prefWidth="142.0" />
@@ -96,6 +96,8 @@
                         <Label layoutX="623.0" layoutY="332.0" text="Image" />
                         <Separator layoutX="567.0" layoutY="436.0" prefWidth="283.0" />
                         <Button layoutX="660.0" layoutY="480.0" mnemonicParsing="false" text="Save To File" />
+                        <Button fx:id="darkModeBtn" layoutX="666.0" layoutY="440.0" mnemonicParsing="false" onAction="#darkMode" text="Dark Mode" />
+                        <Label fx:id="diagnosesLabel" layoutX="243.0" layoutY="324.0" text="Label" />
                      </children>
                   </Pane>
                </content>

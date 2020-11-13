@@ -3,6 +3,7 @@ package sample;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -10,9 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.Window;
+import javafx.stage.*;
 
 import java.io.IOException;
 import java.net.URL;
@@ -32,6 +31,7 @@ public class MainController implements Initializable
     @FXML CheckBox wifiCommBox, gprsBox;
 
     @FXML Label connectionLabel;
+    @FXML Label diagnosesLabel;
 
     @FXML Button connectBtn, diagnosesBtn, solutionsBtn;
 
@@ -85,8 +85,13 @@ public class MainController implements Initializable
 
     Set<ToggleGroup> toggleGroupSet;
 
+    Stage diagnosesStage;
+
     boolean completion;
+    boolean darkLight = false;
+
     TimeClock SYnergy;
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
@@ -640,16 +645,22 @@ public class MainController implements Initializable
                     imageField.getText(),
                     versionField.getText());
 
-            SYnergy = new TimeClock(synergyParts);
+
 
             Node node = (Node) event.getSource();
-            Stage diagnosesStage = new Stage();
+
 
             try {
+                diagnosesStage = new Stage();
+                SYnergy = new TimeClock(synergyParts, diagnosesStage);
                 Parent root = FXMLLoader.load(getClass().getResource("diagnosesWindow.fxml"));
+                root.setStyle(node.getScene().getRoot().getStyle());
+                root.setUserData(SYnergy);
                 diagnosesStage.setTitle("Diagnoses");
                 diagnosesStage.setScene(new Scene(root, 600, 400));
                 diagnosesStage.initModality(Modality.WINDOW_MODAL);
+                diagnosesStage.initStyle(StageStyle.UNDECORATED);
+
 
                 Window primaryWindow = node.getScene().getWindow();
 
@@ -658,15 +669,52 @@ public class MainController implements Initializable
                 diagnosesStage.setX(primaryWindow.getX() + 200);
                 diagnosesStage.setY(primaryWindow.getY() + 100);
 
+               /* diagnosesStage.onCloseRequestProperty().addListener(new ChangeListener<EventHandler<WindowEvent>>()
+                {
+                    @Override
+                    public void changed(ObservableValue<? extends EventHandler<WindowEvent>> observableValue,
+                                        EventHandler<WindowEvent> windowEventEventHandler, EventHandler<WindowEvent> t1)
+                    {
+                        SYnergy = (TimeClock) diagnosesStage.getUserData();
+                        diagnosesLabel.setText(SYnergy.getInitialParts().getCoreboard());
+                    }
+                });*/
+
                 diagnosesStage.setUserData(SYnergy);
 
                 diagnosesStage.setResizable(false);
 
                 diagnosesStage.show();
+                diagnosesStage.setOnCloseRequest(new EventHandler<WindowEvent>()
+                {
+                    @Override
+                    public void handle(WindowEvent windowEvent)
+                    {
+                        System.out.println(windowEvent.getEventType());
+                    }
+                });
             } catch (IOException exception)
             {
                 exception.printStackTrace();
             }
         }
     }
+    @FXML
+    private void darkMode(ActionEvent event)
+    {
+        Node node = (Node)event.getSource();
+        if (!darkLight)
+        {
+
+            node.getScene().getRoot().setStyle("-fx-base:black");
+            darkLight = true;
+        }
+        else if(darkLight)
+        {
+            node.getScene().getRoot().setStyle("");
+            darkLight = false;
+        }
+
+    }
+
 }
