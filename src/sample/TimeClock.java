@@ -1,6 +1,7 @@
 package sample;
 
 import javafx.scene.control.Alert;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 public class TimeClock
@@ -13,47 +14,39 @@ public class TimeClock
 
     private ReplacedPartData replacedParts;
 
-    private Stage stage;
+    public TimeClock()
+    {
+        initialParts = null;
 
+        diagnoses = null;
+
+        solutions = null;
+
+        replacedParts = null;
+    }
 
     public TimeClock(InitialPartsData initialParts)
     {
         this.initialParts = initialParts;
     }
-    public TimeClock(InitialPartsData initialParts, Stage stage)
-    {
-        this.initialParts = initialParts;
-        this.stage = stage;
-    }
+
 
     public TimeClock(DiagnosticData diagnoses)
     {
         this.diagnoses = diagnoses;
     }
-    public TimeClock(DiagnosticData diagnoses, Stage stage)
-    {
-        this.diagnoses = diagnoses;
-        this.stage = stage;
-    }
+
 
     public TimeClock(SolutionData solutions)
     {
         this.solutions = solutions;
     }
-    public TimeClock(SolutionData solutions, Stage stage)
-    {
-        this.solutions = solutions;
-        this.stage = stage;
-    }
+
     public TimeClock(ReplacedPartData replacedParts)
     {
         this.replacedParts = replacedParts;
     }
-    public TimeClock(ReplacedPartData replacedParts,Stage stage)
-    {
-        this.replacedParts = replacedParts;
-        this.stage = stage;
-    }
+
 
     public InitialPartsData getInitialParts()
     {
@@ -75,9 +68,24 @@ public class TimeClock
         return replacedParts;
     }
 
-    public Stage getStage()
+    public void setInitialParts(InitialPartsData initialParts)
     {
-        return stage;
+        this.initialParts = initialParts;
+    }
+
+    public void setDiagnoses(DiagnosticData diagnoses)
+    {
+        this.diagnoses = diagnoses;
+    }
+
+    public void setSolutions(SolutionData solutions)
+    {
+        this.solutions = solutions;
+    }
+
+    public void setReplacedParts(ReplacedPartData replacedParts)
+    {
+        this.replacedParts = replacedParts;
     }
 
     public void clear()
@@ -118,8 +126,11 @@ public class TimeClock
         {
             isClockComplete = false;
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+
             errorAlert.setContentText(errorMsg);
-            errorAlert.show();
+            errorAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+
+            errorAlert.showAndWait();
         }
 
         return isClockComplete;

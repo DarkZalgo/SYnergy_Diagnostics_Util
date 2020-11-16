@@ -48,6 +48,11 @@ public class ToggleData
         return isRequired;
     }
 
+    public void setRequired(boolean required)
+    {
+        isRequired = required;
+    }
+
     public void setToggleData(String toggleData)
     {
         this.toggleData = toggleData;

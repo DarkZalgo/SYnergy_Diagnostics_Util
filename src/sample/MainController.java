@@ -11,6 +11,7 @@ import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.stage.*;
 
 import java.io.IOException;
@@ -28,10 +29,11 @@ public class MainController implements Initializable
     @FXML TextField otherCardField;
     @FXML TextField macField, imageField, versionField;
 
+    @FXML TextArea diagnosesArea, solutionsArea, partsReplacedArea;
+
     @FXML CheckBox wifiCommBox, gprsBox;
 
     @FXML Label connectionLabel;
-    @FXML Label diagnosesLabel;
 
     @FXML Button connectBtn, diagnosesBtn, solutionsBtn;
 
@@ -62,7 +64,7 @@ public class MainController implements Initializable
     ToggleData modelData = new ToggleData("Clock Model","",false,true);
     ToggleData readerData = new ToggleData("Reader Type","",false,true);
     ToggleData fpuTypeData = new ToggleData("FPU Type","",false,true);
-    ToggleData fpuSizeData = new ToggleData("Clock Model","",false,false);
+    ToggleData fpuSizeData = new ToggleData("FPU Size","",false,false);
     ToggleData connectionData = new ToggleData("Connection Type","",false,false);
     ToggleData communicationData = new ToggleData("Communication Type","",false,true);
     ToggleData coreboardData = new ToggleData("Coreboard Type","",false,true);
@@ -124,6 +126,10 @@ public class MainController implements Initializable
         sdCardGroup.setUserData(sdCardData);
         batteryGroup.setUserData(batteryData);
         interfaceGroup.setUserData(interfaceData);
+
+        diagnosesArea.setEditable(false);
+        solutionsArea.setEditable(false);
+        partsReplacedArea.setEditable(false);
 
 
         connectionLabel.setVisible(false);
@@ -197,7 +203,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) modelGroup.getSelectedToggle();
 
                     modelData.setToggled(true);
-                    modelData.setToggleData(tmpBtn.getText().toUpperCase());
+                    modelData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -249,7 +255,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) readerGroup.getSelectedToggle();
 
                     readerData.setToggled(true);
-                    readerData.setToggleData(tmpBtn.getText().toUpperCase());
+                    readerData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -267,7 +273,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) fpuTypeGroup.getSelectedToggle();
 
                     fpuTypeData.setToggled(true);
-                    fpuTypeData.setToggleData(tmpBtn.getText().toUpperCase());
+                    fpuTypeData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -279,6 +285,11 @@ public class MainController implements Initializable
 
                     suprNineK.setVisible(false);
                     suprTwentyFiveK.setVisible(false);
+
+                    fpuSizeData.clear();
+                    fpuSizeData.setRequired(true);
+
+                    deSelectRadioSet(fpuSizeSet);
                 }
                 else if(fpuTypeGroup.getSelectedToggle() == suprFPU)
                 {
@@ -287,15 +298,27 @@ public class MainController implements Initializable
 
                     suprNineK.setVisible(true);
                     suprTwentyFiveK.setVisible(true);
+
+                    fpuSizeData.clear();
+                    fpuSizeData.setRequired(true);
+
+                    deSelectRadioSet(fpuSizeSet);
                 }
                 else if(fpuTypeGroup.getSelectedToggle() == noneFPU)
                 {
+                    deSelectRadioSet(fpuSizeSet,true);
+
                     casThreeK.setVisible(false);
                     casTenK.setVisible(false);
 
                     suprNineK.setVisible(false);
                     suprTwentyFiveK.setVisible(false);
+
                     fpuSizeData.clear();
+                    fpuSizeData.setRequired(false);
+
+                    deSelectRadioSet(fpuSizeSet);
+
                 }
             }
         });
@@ -307,10 +330,10 @@ public class MainController implements Initializable
             {
                 if (fpuSizeGroup.getSelectedToggle()!= null)
                 {
-                    RadioButton tmpBtn = (RadioButton) fpuTypeGroup.getSelectedToggle();
+                    RadioButton tmpBtn = (RadioButton) fpuSizeGroup.getSelectedToggle();
 
                     fpuSizeData.setToggled(true);
-                    fpuSizeData.setToggleData(tmpBtn.getText().toUpperCase());
+                    fpuSizeData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -358,7 +381,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) communicationGroup.getSelectedToggle();
 
                     communicationData.setToggled(true);
-                    communicationData.setToggleData(tmpBtn.getText().toUpperCase());
+                    communicationData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -375,7 +398,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) coreboardGroup.getSelectedToggle();
 
                     coreboardData.setToggled(true);
-                    coreboardData.setToggleData(tmpBtn.getText().toUpperCase());
+                    coreboardData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -392,7 +415,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) motherboardGroup.getSelectedToggle();
 
                     motherboardData.setToggled(true);
-                    motherboardData.setToggleData(tmpBtn.getText().toUpperCase());
+                    motherboardData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -409,7 +432,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) sdCardGroup.getSelectedToggle();
 
                     sdCardData.setToggled(true);
-                    sdCardData.setToggleData(tmpBtn.getText().toUpperCase());
+                    sdCardData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -426,7 +449,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) batteryGroup.getSelectedToggle();
 
                     batteryData.setToggled(true);
-                    batteryData.setToggleData(tmpBtn.getText().toUpperCase());
+                    batteryData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -443,7 +466,7 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) interfaceGroup.getSelectedToggle();
 
                     interfaceData.setToggled(true);
-                    interfaceData.setToggleData(tmpBtn.getText().toUpperCase());
+                    interfaceData.setToggleData(tmpBtn.getText());
 
                     tmpBtn = null;
                 }
@@ -495,64 +518,17 @@ public class MainController implements Initializable
     @FXML
     private void refreshAll()
     {
-
-        for(RadioButton modelRadio : modelSet)
-        {
-            modelRadio.setSelected(false);
-        }
-
-        for(RadioButton readerRadio : readerSet)
-        {
-            readerRadio.setSelected(false);
-        }
-
-        for(RadioButton fpuTypeRadio : fpuTypeSet)
-        {
-            fpuTypeRadio.setSelected(false);
-        }
-
-        for(RadioButton fpuSizeRadio : fpuSizeSet)
-        {
-            fpuSizeRadio.setSelected(false);
-            fpuSizeRadio.setVisible(false);
-        }
-
-        for(RadioButton connectionRadio : connectionSet)
-        {
-            connectionRadio.setSelected(false);
-        }
-
-        for(RadioButton commRadio : communicationSet)
-        {
-            commRadio.setSelected(false);
-        }
-
-        for(RadioButton mbRadio : motherboardSet)
-        {
-            mbRadio.setSelected(false);
-            mbRadio.setVisible(false);
-        }
-
-        for(RadioButton cbRadio : coreboardSet)
-        {
-            cbRadio.setSelected(false);
-            cbRadio.setVisible(false);
-        }
-
-        for(RadioButton sdRadio : sdCardSet)
-        {
-            sdRadio.setSelected(false);
-        }
-
-        for(RadioButton batteryRadio : batterySet)
-        {
-            batteryRadio.setSelected(false);
-        }
-
-        for(RadioButton interfaceRadio : interfaceBoardSet)
-        {
-            interfaceRadio.setSelected(false);
-        }
+        deSelectRadioSet(modelSet);
+        deSelectRadioSet(readerSet);
+        deSelectRadioSet(fpuTypeSet);
+        deSelectRadioSet(fpuSizeSet, false);
+        deSelectRadioSet(connectionSet);
+        deSelectRadioSet(communicationSet);
+        deSelectRadioSet(motherboardSet, false);
+        deSelectRadioSet(coreboardSet, false);
+        deSelectRadioSet(sdCardSet);
+        deSelectRadioSet(batterySet);
+        deSelectRadioSet(interfaceBoardSet);
 
         caseNumField.setText("");
         serialNumField.setText("");
@@ -609,12 +585,16 @@ public class MainController implements Initializable
         {
             completion = false;
             Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+
             errorAlert.setContentText(errorMsg);
-            errorAlert.show();
+            errorAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+
+            errorAlert.showAndWait();
         }
 
         return completion;
     }
+
     @FXML
     private void addDiagnoses(ActionEvent event)
     {
@@ -652,10 +632,14 @@ public class MainController implements Initializable
 
             try {
                 diagnosesStage = new Stage();
-                SYnergy = new TimeClock(synergyParts, diagnosesStage);
-                Parent root = FXMLLoader.load(getClass().getResource("diagnosesWindow.fxml"));
+                SYnergy = Context.getInstance().currentClock();
+                SYnergy.setInitialParts(synergyParts);
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("diagnosesWindow.fxml"));
+                Parent root = loader.load();
+
+                DiagnosesController diagnosesController = loader.getController();
+
                 root.setStyle(node.getScene().getRoot().getStyle());
-                root.setUserData(SYnergy);
                 diagnosesStage.setTitle("Diagnoses");
                 diagnosesStage.setScene(new Scene(root, 600, 400));
                 diagnosesStage.initModality(Modality.WINDOW_MODAL);
@@ -669,28 +653,33 @@ public class MainController implements Initializable
                 diagnosesStage.setX(primaryWindow.getX() + 200);
                 diagnosesStage.setY(primaryWindow.getY() + 100);
 
-               /* diagnosesStage.onCloseRequestProperty().addListener(new ChangeListener<EventHandler<WindowEvent>>()
-                {
-                    @Override
-                    public void changed(ObservableValue<? extends EventHandler<WindowEvent>> observableValue,
-                                        EventHandler<WindowEvent> windowEventEventHandler, EventHandler<WindowEvent> t1)
-                    {
-                        SYnergy = (TimeClock) diagnosesStage.getUserData();
-                        diagnosesLabel.setText(SYnergy.getInitialParts().getCoreboard());
-                    }
-                });*/
-
-                diagnosesStage.setUserData(SYnergy);
-
                 diagnosesStage.setResizable(false);
 
                 diagnosesStage.show();
-                diagnosesStage.setOnCloseRequest(new EventHandler<WindowEvent>()
+                diagnosesStage.setOnHiding(new EventHandler<WindowEvent>()
                 {
                     @Override
                     public void handle(WindowEvent windowEvent)
                     {
-                        System.out.println(windowEvent.getEventType());
+                        diagnosesArea.clear();
+                        String issues = "";
+                        for(String s : SYnergy.getDiagnoses().getImageIssuesList())
+                        {
+                            issues += s + "\n";
+                        }
+                        for(String s : SYnergy.getDiagnoses().getFunctionsList())
+                        {
+                            issues += s + "\n";
+                        }
+                        for(String s : SYnergy.getDiagnoses().getMiscList())
+                        {
+                            issues += s + "\n";
+                        }
+                        for(String s : SYnergy.getDiagnoses().getOtherIssuesList())
+                        {
+                            issues += s + "\n";
+                        }
+                        diagnosesArea.appendText(issues);
                     }
                 });
             } catch (IOException exception)
@@ -699,6 +688,34 @@ public class MainController implements Initializable
             }
         }
     }
+
+    private void deSelectRadioSet(Set<RadioButton> radioSet, boolean isVisibile)
+    {
+        if (!isVisibile)
+        {
+            for(RadioButton tmpBtn : radioSet)
+            {
+                tmpBtn.setSelected(false);
+                tmpBtn.setVisible(false);
+            }
+        }
+        else
+            {
+            for (RadioButton tmpBtn : radioSet)
+            {
+                tmpBtn.setSelected(false);
+            }
+        }
+    }
+
+    private void deSelectRadioSet(Set<RadioButton> radioSet)
+    {
+        for (RadioButton tmpBtn : radioSet)
+        {
+            tmpBtn.setSelected(false);
+        }
+    }
+
     @FXML
     private void darkMode(ActionEvent event)
     {
@@ -716,5 +733,4 @@ public class MainController implements Initializable
         }
 
     }
-
 }

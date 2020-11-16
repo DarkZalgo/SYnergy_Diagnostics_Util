@@ -7,28 +7,41 @@
    <children>
       <Pane prefHeight="400.0" prefWidth="600.0">
          <children>
-            <Button fx:id="okBtn" layoutX="125.0" layoutY="345.0" mnemonicParsing="false" onAction="#sendToMain" prefWidth="62.0" text="OK" />
+            <Button fx:id="okBtn" layoutX="127.0" layoutY="360.0" mnemonicParsing="false" onAction="#sendToMain" prefWidth="62.0" text="OK" />
             <Separator layoutY="96.0" prefWidth="600.0" />
-            <CheckBox fx:id="powersOnBox" layoutX="14.0" layoutY="21.0" mnemonicParsing="false" text="Clock Powers On" />
-            <CheckBox fx:id="ledsOnBox" layoutX="14.0" layoutY="46.0" mnemonicParsing="false" text="LEDs Turn On" />
-            <CheckBox fx:id="fpuOnBox" layoutX="14.0" layoutY="71.0" mnemonicParsing="false" text="FPU Light Turn On" />
-            <CheckBox fx:id="blackScreenBox" layoutX="180.0" layoutY="21.0" mnemonicParsing="false" text="Goes To Black Screen" />
-            <CheckBox fx:id="partialLoadBox" layoutX="180.0" layoutY="46.0" mnemonicParsing="false" text="Partially Loads Image" />
-            <CheckBox fx:id="fullLoadBox" layoutX="180.0" layoutY="71.0" mnemonicParsing="false" text="Fully Loads Image" />
-            <CheckBox fx:id="readerFunctionBox" layoutX="14.0" layoutY="106.0" mnemonicParsing="false" text="EXT. Mag Reader Functions" />
-            <CheckBox fx:id="fpuFunctionBox" layoutX="226.0" layoutY="106.0" mnemonicParsing="false" text="FPU Reader Functions" />
-            <CheckBox fx:id="keypadFunctionBox" layoutX="416.0" layoutY="106.0" mnemonicParsing="false" text="Keypad Functions" />
+            <CheckBox fx:id="powersOnBox" layoutX="14.0" layoutY="21.0" mnemonicParsing="false" text="Clock Doesn't Power On" />
+            <CheckBox fx:id="ledsOnBox" layoutX="14.0" layoutY="46.0" mnemonicParsing="false" text="LEDs Don't Turn On" />
+            <CheckBox fx:id="fpuOnBox" layoutX="14.0" layoutY="71.0" mnemonicParsing="false" text="FPU Lights Don't Turn On" />
+            <CheckBox fx:id="blackScreenBox" layoutX="215.0" layoutY="21.0" mnemonicParsing="false" text="Goes To Black Screen" />
+            <CheckBox fx:id="partialLoadBox" layoutX="215.0" layoutY="46.0" mnemonicParsing="false" text="Partially Loads Image" />
+            <CheckBox fx:id="fullLoadBox" layoutX="215.0" layoutY="71.0" mnemonicParsing="false" text="Fully Loads Image" />
+            <CheckBox fx:id="readerFunctionBox" layoutX="14.0" layoutY="106.0" mnemonicParsing="false" text="Card Reader Does Not Work" />
+            <CheckBox fx:id="fpuFunctionBox" layoutX="223.0" layoutY="106.0" mnemonicParsing="false" text="FPU Reader Does Not Work" />
+            <CheckBox fx:id="keypadFunctionBox" layoutX="429.0" layoutY="106.0" mnemonicParsing="false" text="Keypad does not work" />
             <Separator layoutY="131.0" prefWidth="600.0" />
             <CheckBox fx:id="fadedLCDBox" layoutX="14.0" layoutY="141.0" mnemonicParsing="false" text="Faded Screen" />
             <CheckBox fx:id="brokenLCDBox" layoutX="14.0" layoutY="166.0" mnemonicParsing="false" text="Broken Screen" />
             <CheckBox fx:id="backCaseBox" layoutX="187.0" layoutY="166.0" mnemonicParsing="false" text="Back Case Damaged" />
             <CheckBox fx:id="frontCaseBox" layoutX="390.0" layoutY="166.0" mnemonicParsing="false" text="Front Case Damaged" />
-            <Button fx:id="cancelBtn" layoutX="375.0" layoutY="345.0" mnemonicParsing="false" onAction="#cancelToMain" text="Cancel" />
+            <Button fx:id="cancelBtn" layoutX="377.0" layoutY="360.0" mnemonicParsing="false" onAction="#cancelToMain" text="Cancel" />
             <CheckBox fx:id="missingUSBCoverBox" layoutX="187.0" layoutY="141.0" mnemonicParsing="false" text="Missing Rubber USB Cover" />
-            <CheckBox fx:id="loopBox" layoutX="362.0" layoutY="21.0" mnemonicParsing="false" text="Bootloops" />
+            <CheckBox fx:id="loopBox" layoutX="395.0" layoutY="21.0" mnemonicParsing="false" text="Bootloops" />
             <Separator layoutY="191.0" prefWidth="600.0" />
-            <CheckBox fx:id="noSDReadBox" layoutX="14.0" layoutY="201.0" mnemonicParsing="false" text="Has No SD To Read" />
+            <CheckBox fx:id="noSDReadBox" layoutX="16.0" layoutY="201.0" mnemonicParsing="false" text="Has No SD To Read" />
             <CheckBox fx:id="sidePanelBox" layoutX="390.0" layoutY="141.0" mnemonicParsing="false" text="Side Panel Damaged" />
+            <CheckBox fx:id="error117Box" layoutX="189.0" layoutY="201.0" mnemonicParsing="false" text="Error -117" />
+            <CheckBox fx:id="other1Box" layoutX="16.0" layoutY="241.0" mnemonicParsing="false" text="Other: " />
+            <CheckBox fx:id="other2Box" layoutX="16.0" layoutY="271.0" mnemonicParsing="false" text="Other:" />
+            <CheckBox fx:id="other3Box" layoutX="16.0" layoutY="301.0" mnemonicParsing="false" text="Other:" />
+            <CheckBox fx:id="other4Box" layoutX="16.0" layoutY="331.0" mnemonicParsing="false" text="Other:" />
+            <TextField fx:id="other1Field" layoutX="87.0" layoutY="237.0" prefHeight="26.0" prefWidth="509.0" />
+            <TextField fx:id="other2Field" layoutX="87.0" layoutY="267.0" prefHeight="26.0" prefWidth="509.0" />
+            <TextField fx:id="other3Field" layoutX="87.0" layoutY="297.0" prefHeight="26.0" prefWidth="509.0" />
+            <TextField fx:id="other4Field" layoutX="87.0" layoutY="327.0" prefHeight="26.0" prefWidth="509.0" />
+            <CheckBox fx:id="incorrectVersBox" layoutX="297.0" layoutY="201.0" mnemonicParsing="false" text="Incorrect Version" />
+            <Separator layoutY="226.0" prefWidth="600.0" />
+            <CheckBox fx:id="corruptedImageBox" layoutX="439.0" layoutY="201.0" mnemonicParsing="false" text="Corrupted Image" />
          </children></Pane>
+      <ComboBox layoutX="-224.0" layoutY="1.0" prefWidth="150.0" />
    </children>
 </AnchorPane>
