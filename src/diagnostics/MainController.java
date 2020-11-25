@@ -1,4 +1,4 @@
-package sample;
+package diagnostics;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -14,13 +14,21 @@ import javafx.scene.control.*;
 import javafx.scene.layout.Region;
 import javafx.stage.*;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+import org.apache.commons.lang3.StringUtils;
+import org.docx4j.Docx4J;
+import org.docx4j.model.datastorage.migration.VariablePrepare;
+import org.docx4j.openpackaging.exceptions.Docx4JException;
+import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.swing.text.DateFormatter;
 
 public class MainController implements Initializable
 {
@@ -49,6 +57,8 @@ public class MainController implements Initializable
     @FXML RadioButton blueBattery, silverBattery, noneBattery;
     @FXML RadioButton switchNoClasp, switchNewClasp, jumperNewClasp, jumperOldClasp;
 
+    @FXML DatePicker recvDatePicker;
+
     ToggleGroup modelGroup = new ToggleGroup();
     ToggleGroup readerGroup = new ToggleGroup();
     ToggleGroup fpuTypeGroup = new ToggleGroup();
@@ -61,17 +71,17 @@ public class MainController implements Initializable
     ToggleGroup batteryGroup = new ToggleGroup();
     ToggleGroup interfaceGroup = new ToggleGroup();
 
-    ToggleData modelData = new ToggleData("Clock Model","",false,true);
-    ToggleData readerData = new ToggleData("Reader Type","",false,true);
-    ToggleData fpuTypeData = new ToggleData("FPU Type","",false,true);
-    ToggleData fpuSizeData = new ToggleData("FPU Size","",false,false);
-    ToggleData connectionData = new ToggleData("Connection Type","",false,false);
-    ToggleData communicationData = new ToggleData("Communication Type","",false,true);
-    ToggleData coreboardData = new ToggleData("Coreboard Type","",false,true);
-    ToggleData motherboardData = new ToggleData("Motherboard Type","",false,true);
-    ToggleData sdCardData = new ToggleData("SD Card Type","",false,true);
-    ToggleData batteryData = new ToggleData("Battery Type","",false,true);
-    ToggleData interfaceData = new ToggleData("Interface Board Type","",false,true);
+    ToggleData modelData = new ToggleData("Clock Model","N/A",false,true);
+    ToggleData readerData = new ToggleData("Reader Type","N/A",false,true);
+    ToggleData fpuTypeData = new ToggleData("FPU Type","N/A",false,true);
+    ToggleData fpuSizeData = new ToggleData("FPU Size","N/A",false,false);
+    ToggleData connectionData = new ToggleData("Connection Type","N/A",false,false);
+    ToggleData communicationData = new ToggleData("Communication Type","N/A",false,true);
+    ToggleData coreboardData = new ToggleData("Coreboard Type","N/A",false,true);
+    ToggleData motherboardData = new ToggleData("Motherboard Type","N/A",false,true);
+    ToggleData sdCardData = new ToggleData("SD Card Type","N/A",false,true);
+    ToggleData batteryData = new ToggleData("Battery Type","N/A",false,true);
+    ToggleData interfaceData = new ToggleData("Interface Board Type","N/A",false,true);
 
     Set<RadioButton> modelSet;
     Set<RadioButton> readerSet;
@@ -94,6 +104,10 @@ public class MainController implements Initializable
 
     TimeClock SYnergy;
 
+    Logger logger = LoggerFactory.getLogger("Log");
+
+
+
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
@@ -105,8 +119,8 @@ public class MainController implements Initializable
         fpuSizeSet = new HashSet<>(Arrays.asList(casThreeK, casTenK, suprNineK, suprTwentyFiveK));
         connectionSet = new HashSet<>(Arrays.asList(serialRadio, sshRadio));
         communicationSet = new HashSet<>(Arrays.asList(POEComm, ethComm));
-        coreboardSet = new HashSet<>(Arrays.asList(sdBoard, threeWire, twoWire, unmodified, A20mBoard));
-        motherboardSet = new HashSet<>(Arrays.asList(oneThreeA6H, oneThreeANon6H, oneThreeNon6H, oneTwo, A20cBoard));
+        motherboardSet = new HashSet<>(Arrays.asList(sdBoard, threeWire, twoWire, unmodified, A20mBoard));
+        coreboardSet = new HashSet<>(Arrays.asList(oneThreeA6H, oneThreeANon6H, oneThreeNon6H, oneTwo, A20cBoard));
         sdCardSet = new HashSet<>(Arrays.asList(delkinRadio, noneCardRadio, otherCardRadio));
         batterySet = new HashSet<>(Arrays.asList(blueBattery, silverBattery, noneBattery));
         interfaceBoardSet = new HashSet<>(Arrays.asList(switchNoClasp, switchNewClasp, jumperNewClasp, jumperOldClasp));
@@ -637,8 +651,6 @@ public class MainController implements Initializable
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("diagnosesWindow.fxml"));
                 Parent root = loader.load();
 
-                DiagnosesController diagnosesController = loader.getController();
-
                 root.setStyle(node.getScene().getRoot().getStyle());
                 diagnosesStage.setTitle("Diagnoses");
                 diagnosesStage.setScene(new Scene(root, 600, 400));
@@ -661,25 +673,24 @@ public class MainController implements Initializable
                     @Override
                     public void handle(WindowEvent windowEvent)
                     {
-                        diagnosesArea.clear();
-                        String issues = "";
-                        for(String s : SYnergy.getDiagnoses().getImageIssuesList())
+                        if (SYnergy.getDiagnoses() !=null)
                         {
-                            issues += s + "\n";
+                            diagnosesArea.clear();
+                            String issues = "";
+                            for (String s : SYnergy.getDiagnoses().getImageIssuesList()) {
+                                issues += s + "\n";
+                            }
+                            for (String s : SYnergy.getDiagnoses().getFunctionsList()) {
+                                issues += s + "\n";
+                            }
+                            for (String s : SYnergy.getDiagnoses().getMiscList()) {
+                                issues += s + "\n";
+                            }
+                            for (String s : SYnergy.getDiagnoses().getOtherIssuesList()) {
+                                issues += s + "\n";
+                            }
+                            diagnosesArea.appendText(issues);
                         }
-                        for(String s : SYnergy.getDiagnoses().getFunctionsList())
-                        {
-                            issues += s + "\n";
-                        }
-                        for(String s : SYnergy.getDiagnoses().getMiscList())
-                        {
-                            issues += s + "\n";
-                        }
-                        for(String s : SYnergy.getDiagnoses().getOtherIssuesList())
-                        {
-                            issues += s + "\n";
-                        }
-                        diagnosesArea.appendText(issues);
                     }
                 });
             } catch (IOException exception)
@@ -714,6 +725,126 @@ public class MainController implements Initializable
         {
             tmpBtn.setSelected(false);
         }
+    }
+
+    public File getResourceAsFile(String resourcePath) {
+        try {
+            InputStream in = this.getClass().getClassLoader().getResourceAsStream(resourcePath);
+            if (in == null) {
+                System.out.println("=========================");
+                System.out.println("In Is Null");
+                System.out.println("=========================");
+                return null;
+            }
+
+            File tempFile = File.createTempFile(String.valueOf(in.hashCode()), ".tmp");
+            tempFile.deleteOnExit();
+
+            try (FileOutputStream out = new FileOutputStream(tempFile)) {
+                //copy stream
+                byte[] buffer = new byte[1024];
+                int bytesRead;
+                while ((bytesRead = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, bytesRead);
+                }
+            }
+            return tempFile;
+        } catch (IOException e)
+        {
+            System.out.println("=========================");
+            System.out.println("Return Null");
+            System.out.println("=========================");
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    @FXML
+    private void writeToFile(ActionEvent event) throws Exception
+    {
+        String outputFile ="";
+        String outputPath ="";
+        Node node = (Node) event.getSource();
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setInitialFileName("RMA CAS " + caseNumField.getText() + ".docx");
+        FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Word Document Files (*.docx)","*.docx");
+        fileChooser.getExtensionFilters().add(extFilter);
+        ClassLoader loader = this.getClass().getClassLoader();
+        //URL resource = loader.getResource("resources" + File.separator + "template.docx");
+        //URL resource = loader.getResourceAsStream("resources" + File.separator + "template.docx");
+       // WordprocessingMLPackage wordMLPackage = Docx4J.load(getResourceAsFile(File.separator + "resources" + File.separator + "template.docx"));
+        WordprocessingMLPackage wordMLPackage = Docx4J.load(getResourceAsFile("resources/template.docx"));
+
+        HashMap wordMappings = new HashMap();
+        SimpleDateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
+        VariablePrepare.prepare(wordMLPackage);
+        wordMappings.put("casenum", caseNumField.getText());
+        wordMappings.put("qty","qty");
+        wordMappings.put("recvdate",simpleFormat.format(java.sql.Date.valueOf(recvDatePicker.getValue())));
+        wordMappings.put("startdate",simpleFormat.format(new Date()));
+        wordMappings.put("model",SYnergy.getInitialParts().getModel() + " " + SYnergy.getInitialParts().getFpuSize() +
+                " "+ SYnergy.getInitialParts().getFpuType() + "/" +SYnergy.getInitialParts().getReader()
+                + "/" + SYnergy.getInitialParts().getCommunication());
+        wordMappings.put("serialnum",serialNumField.getText());
+        wordMappings.put("firmwarevers","firmware");
+        wordMappings.put("reportedproblem","problem");
+        wordMappings.put("netboard","net board");
+        wordMappings.put("lithium", "voltage");
+        wordMappings.put("battery", SYnergy.getInitialParts().getBattery());
+        wordMappings.put("coreboard",SYnergy.getInitialParts().getCoreboard());
+        wordMappings.put("sdcard",SYnergy.getInitialParts().getSdCard());
+        wordMappings.put("motherboard",SYnergy.getInitialParts().getMotherboard());
+        wordMappings.put("interfaceboard", SYnergy.getInitialParts().getInterfaceBoard());
+        wordMappings.put("firstboot", String.join(" ",SYnergy.getDiagnoses().getTurnsOnList()));
+        wordMappings.put("diagnoses", String.join(" ",SYnergy.getDiagnoses().getMiscList()));
+        wordMappings.put("solutions","solutions");
+        wordMappings.put("partsreplaced","parts replaced");
+        wordMappings.put("initials",initialsField.getText());
+
+        wordMLPackage.getMainDocumentPart().variableReplace(wordMappings);
+
+        File rmaNotes = fileChooser.showSaveDialog(node.getScene().getWindow());
+        logger.info("Starting save operation");
+        Docx4J.save(wordMLPackage, rmaNotes, Docx4J.FLAG_NONE);
+        logger.info("Successfully saved "+outputFile + " at "+outputPath);
+
+
+        /*
+        int charCount = 0;
+
+        template = new XWPFDocument(new FileInputStream(new File(resource.toURI())));
+        extractor = new XWPFWordExtractor(template);
+        String templateText = extractor.getText();
+        if (templateText.contains("[MOTHERBOARD]"))
+            templateText = templateText.replace("[MOTHERBOARD]", SYnergy.getInitialParts().getMotherboard());
+
+
+        VariablePrepare.prepare();
+        char[] chars = templateText.toCharArray();
+
+        for(char c : chars)
+            charCount++;
+        rmaNotes = new XWPFDocument();
+        XWPFParagraph paragraph = rmaNotes.createParagraph();
+
+        List<XWPFParagraph>paragraphs = new ArrayList<XWPFParagraph>();
+        for (int i = 0; i<charCount+1; i++)
+            paragraphs.add(rmaNotes.createParagraph());
+
+        XWPFRun run = paragraph.createRun();
+        StringTokenizer tokenizer = new StringTokenizer(templateText, "\n");
+        int j = 0;
+        while (tokenizer.hasMoreElements())
+        {
+            paragraphs.get(j).setAlignment(ParagraphAlignment.LEFT);
+            paragraphs.get(j).setSpacingAfter(0);
+            paragraphs.get(j).setSpacingBefore(0);
+            run = paragraphs.get(j).createRun();
+            run.setText(tokenizer.nextElement().toString());
+            j++;
+        }
+
+        rmaNotes.write(new FileOutputStream("FinishedNotes.docx"));*/
     }
 
     @FXML

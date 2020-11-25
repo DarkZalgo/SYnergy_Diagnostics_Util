@@ -1,4 +1,4 @@
-package sample;
+package diagnostics;
 
 public class SolutionData
 {

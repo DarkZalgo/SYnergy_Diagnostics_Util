@@ -6,6 +6,48 @@
         <element id="file-copy" path="$PROJECT_DIR$/src/sd/META-INF/MANIFEST.MF" />
       </element>
       <element id="module-output" name="SYnergy_Diagnostics" />
+      <element id="archive" name="shade.jar">
+        <element id="module-output" name="shade" />
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/shade/META-INF/MANIFEST.MF" />
+        </element>
+      </element>
+      <element id="extracted-dir" path="/usr/share/java/jaxb-api.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/docx4j-core-8.2.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/docx4j-openxml-objects-8.2.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/docx4j-JAXB-ReferenceImpl-8.2.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/docx4j-openxml-objects-pml-8.2.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/docx4j-openxml-objects-sml-8.2.4.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/txw2-2.3.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/antlr-2.7.7.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/stax-ex-1.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/wmf2svg-0.9.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/commons-io-2.6.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/httpcore-4.4.11.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/mbassador-1.3.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/httpclient-4.5.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/jaxb-svg11-1.0.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/slf4j-api-1.7.26.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/commons-lang3-3.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/FastInfoset-1.2.16.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/checker-qual-2.8.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/commons-codec-1.12.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/jackson-core-2.9.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/jaxb-runtime-2.3.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/antlr-runtime-3.5.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/xalan-metainf-8.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/stringtemplate-3.2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/commons-compress-1.18.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/jcl-over-slf4j-1.7.26.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/jackson-databind-2.9.9.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/xalan-serializer-8.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/xmlgraphics-commons-2.3.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/xalan-interpretive-8.0.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/jackson-annotations-2.9.0.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/jakarta.xml.bind-api-2.3.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/istack-commons-runtime-3.0.8.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/jakarta.activation-api-1.2.1.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/docx4j-community-8.2.4/dependencies/error_prone_annotations-2.3.3.jar" path-in-jar="/" />
       <element id="extracted-dir" path="/usr/share/openjfx/lib/src.zip" path-in-jar="/" />
       <element id="extracted-dir" path="/usr/share/openjfx/lib/javafx.web.jar" path-in-jar="/" />
       <element id="extracted-dir" path="/usr/share/openjfx/lib/javafx.base.jar" path-in-jar="/" />

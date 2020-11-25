@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/SYnergy_Diagnostics.iml" filepath="$PROJECT_DIR$/SYnergy_Diagnostics.iml" />
+      <module fileurl="file://$PROJECT_DIR$/shade/shade.iml" filepath="$PROJECT_DIR$/shade/shade.iml" />
     </modules>
   </component>
 </project>

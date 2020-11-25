@@ -2,11 +2,19 @@
   <library name="lib">
     <CLASSES>
       <root url="file:///usr/share/openjfx/lib" />
+      <root url="file:///usr/share/docx4j-community-8.2.4" />
+      <root url="file:///usr/share/docx4j-community-8.2.4/dependencies" />
+      <root url="jar:///usr/share/java/jaxb-api.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
       <root url="file:///usr/share/openjfx/lib" />
     </SOURCES>
+    <excluded>
+      <root url="jar:///usr/share/docx4j-community-8.2.4/docx4j-JAXB-Internal-8.2.4.jar!/" />
+    </excluded>
+    <jarDirectory url="file:///usr/share/docx4j-community-8.2.4" recursive="false" />
+    <jarDirectory url="file:///usr/share/docx4j-community-8.2.4/dependencies" recursive="false" />
     <jarDirectory url="file:///usr/share/openjfx/lib" recursive="false" />
     <jarDirectory url="file:///usr/share/openjfx/lib" recursive="false" type="SOURCES" />
   </library>

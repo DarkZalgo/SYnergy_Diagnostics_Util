@@ -1,21 +1,17 @@
-package sample;
+package diagnostics;
 
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
 import javafx.scene.control.Alert;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -146,16 +142,16 @@ public class DiagnosesController implements Initializable
 
         if(!powersOnBox.isSelected())
             turnsOnList.add("Clock powers on,");
-        if (!ledsOnBox.isSelected() && fpuOnBox.isSelected())
-            turnsOnList.add("All lights turn on,");
+        if (!ledsOnBox.isSelected() && !fpuOnBox.isSelected())
+            turnsOnList.add("all lights turn on,");
         else if (!ledsOnBox.isSelected() && fpuOnBox.isSelected())
-            turnsOnList.add("All lights turn on except FPU light");
+            turnsOnList.add("all lights turn on except FPU light");
         if (!loopBox.isSelected() && partialLoadBox.isSelected())
-            turnsOnList.add("Partially loads image.");
+            turnsOnList.add("partially loads image.");
         if (loopBox.isSelected())
-            turnsOnList.add("Clock partially loads and starts bootlooping.");
+            turnsOnList.add("clock partially loads and starts bootlooping.");
         if (blackScreenBox.isSelected())
-            turnsOnList.add("Goes to black screen.");
+            turnsOnList.add("goes to black screen.");
         if (fullLoadBox.isSelected())
             turnsOnList.add("Fully loads " + currentParts.getVersion() + " " + currentParts.getImage());
 
