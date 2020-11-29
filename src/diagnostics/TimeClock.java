@@ -1,5 +1,6 @@
 package diagnostics;
 
+import javafx.beans.property.SimpleStringProperty;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Region;
 
@@ -50,6 +51,10 @@ public class TimeClock implements Serializable
     public ReplacedPartData getReplacedParts()
     {
         return replacedParts;
+    }
+
+    public CaseData getCaseData() {
+        return caseData;
     }
 
     public void setInitialParts(InitialPartsData initialParts)
@@ -126,4 +131,5 @@ public class TimeClock implements Serializable
 
         return isClockComplete;
     }
+
 }

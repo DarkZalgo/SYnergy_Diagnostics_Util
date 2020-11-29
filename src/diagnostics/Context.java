@@ -15,4 +15,9 @@ public class Context {
     {
         return clock;
     }
+
+    public void setClock(TimeClock clock)
+    {
+        this.clock = clock;
+    }
 }

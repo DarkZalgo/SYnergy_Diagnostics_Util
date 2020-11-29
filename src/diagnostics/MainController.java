@@ -18,6 +18,8 @@ import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import org.apache.commons.lang3.StringUtils;
@@ -36,7 +38,7 @@ public class MainController implements Initializable
     @FXML TextField serialNumField, caseNumField, initialsField;
     @FXML TextField connectionField;
     @FXML TextField otherCardField;
-    @FXML TextField macField, imageField, versionField, custNameField;
+    @FXML TextField reportedIssueField, macField, imageField, versionField, custNameField;
     @FXML TextField qtyOneField, qtyTwoField;
 
     @FXML TextArea diagnosesArea, solutionsArea, partsReplacedArea;
@@ -153,8 +155,8 @@ public class MainController implements Initializable
         rmaPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         connectionLabel.setVisible(false);
-        qtyOfLabel.setVisible(false);
-        qtyTwoField.setVisible(false);
+       // qtyOfLabel.setVisible(false);
+        //qtyTwoField.setVisible(false);
 
         for(RadioButton modelRadio : modelSet)
         {
@@ -559,17 +561,19 @@ public class MainController implements Initializable
                     qtyOneField.setText(t1.replaceAll("[^\\d]", ""));
                 }
 
-                if (qtyOneField.getText().length() > 0 && Integer.parseInt(qtyOneField.getText()) > 1)
+            }
+        });
+
+        qtyTwoField.textProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1)
+            {
+                if (!t1.matches("\\d*"))
                 {
-                    qtyOfLabel.setVisible(true);
-                    qtyTwoField.setVisible(true);
+                    qtyTwoField.setText(t1.replaceAll("[^\\d]", ""));
                 }
-                else
-                {
-                    qtyOfLabel.setVisible(false);
-                    qtyTwoField.setVisible(false);
-                    qtyTwoField.setText("");
-                }
+
             }
         });
 
@@ -598,6 +602,7 @@ public class MainController implements Initializable
 
         otherCardField.setText("");
 
+        reportedIssueField.setText("");
         macField.setText("");
         imageField.setText("");
         versionField.setText("");
@@ -605,14 +610,16 @@ public class MainController implements Initializable
         qtyTwoField.setText("");
         custNameField.setText("");
 
-        qtyOfLabel.setVisible(false);
-        qtyTwoField.setVisible(false);
+        diagnosesArea.setText("");
+        solutionsArea.setText("");
+        partsReplacedArea.setText("");
+
         connectionLabel.setVisible(false);
 
         wifiCommBox.setSelected(false);
         gprsBox.setSelected(false);
 
-        recvDatePicker.getEditor().clear();
+        recvDatePicker.setValue(null);
 
         modelData.clear();
         readerData.clear();
@@ -653,7 +660,7 @@ public class MainController implements Initializable
                 errorMsg += tmpData.getGroupName()+"\n";
             }
         }
-        if (recvDatePicker.getValue() != null)
+        if (recvDatePicker.getValue() == null)
         {
             count++;
             errorMsg+="Receive Date Field\n";
@@ -692,6 +699,11 @@ public class MainController implements Initializable
         {
             count++;
             errorMsg+="Quantity Field";
+        }
+        if((qtyOneField.getText().length()  > 0 && qtyTwoField.getText().length() > 0) && Integer.parseInt(qtyOneField.getText()) > Integer.parseInt(qtyTwoField.getText()))
+        {
+            count++;
+            errorMsg+="First quantity field is larger second quantity field";
         }
 
         if(count > 0)
@@ -744,6 +756,7 @@ public class MainController implements Initializable
                 diagnosesStage = new Stage();
                 SYnergy = Context.getInstance().currentClock();
                 SYnergy.setInitialParts(synergyParts);
+
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("diagnosesWindow.fxml"));
                 Parent root = loader.load();
 
@@ -827,39 +840,62 @@ public class MainController implements Initializable
     private void writeToFile(ActionEvent event) throws Exception
     {
         String outputFile ="RMA CAS " + caseNumField.getText() + ".docx";
-        String quantity = "";
         String firmwareVers = "N/A";
         String netBoard = "N/A";
         String lithium = "N/A";
+        String quantity = "";
+        SYnergy = Context.getInstance().currentClock();
+        CaseData caseData = new CaseData(
+                reportedIssueField.getText(),
+                new Date(),
+                recvDatePicker.getValue(),
+                custNameField.getText().toUpperCase(),
+                caseNumField.getText(),
+                serialNumField.getText(),
+                initialsField.getText(),
+                qtyOneField.getText(),
+                qtyTwoField.getText());
+        SYnergy.setCaseData(caseData);
 
-        if (qtyTwoField.getText().length() > 0)
+        StringBuilder builder = new StringBuilder();
+        builder.append(String.join(" ", SYnergy.getDiagnoses().getImageIssuesList()));
+        builder.append(String.join(" ", SYnergy.getDiagnoses().getFunctionsList()));
+        builder.append(String.join(" ", SYnergy.getDiagnoses().getOtherIssuesList()));
+        builder.append(String.join(" ", SYnergy.getDiagnoses().getMiscList()));
+
+        if (SYnergy.getCaseData().getQtyTwo().length() > 0 && Integer.parseInt(SYnergy.getCaseData().getQtyTwo()) > 1)
         {
-            quantity = qtyOneField.getText() + "-of-" + qtyTwoField.getText();
+            quantity = " " + SYnergy.getCaseData().getQtyOne() + " of " + SYnergy.getCaseData().getQtyTwo();
         }
         else
         {
-            quantity = qtyOneField.getText();
+             quantity = SYnergy.getCaseData().getQtyOne();
         }
+        String dataOutputFileName = new SimpleDateFormat("yyyy-dd-MM").format(new Date()) + "_" + custNameField.getText() + "_CAS-" + caseNumField.getText() + quantity;
+
+
+        System.out.println(SYnergy.getCaseData().getStartDate());
+
+
 
         Node node = (Node) event.getSource();
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialFileName(outputFile);
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Word Document Files (*.docx)","*.docx");
         fileChooser.getExtensionFilters().add(extFilter);
-       // ClassLoader loader = this.getClass().getClassLoader();
         WordprocessingMLPackage wordMLPackage = Docx4J.load(handler.getResourceAsFile("resources/template.docx"));
 
         HashMap wordMappings = new HashMap();
         VariablePrepare.prepare(wordMLPackage);
-        wordMappings.put("casenum", caseNumField.getText());
+        wordMappings.put("casenum", SYnergy.getCaseData().getCaseNum());
         wordMappings.put("qty", quantity);
-        wordMappings.put("recvdate", simpleFormat.format(java.sql.Date.valueOf(recvDatePicker.getValue())));
-        wordMappings.put("startdate", simpleFormat.format(new Date()));
+        wordMappings.put("recvdate", SYnergy.getCaseData().getReceiveDate());
+        wordMappings.put("startdate", SYnergy.getCaseData().getStartDate());
         wordMappings.put("model", SYnergy.getInitialParts().getModel() + " " + SYnergy.getInitialParts().getFpuSize()
                 + "/" +SYnergy.getInitialParts().getReader() + "/" + SYnergy.getInitialParts().getCommunication());
-        wordMappings.put("serialnum", serialNumField.getText());
+        wordMappings.put("serialnum", SYnergy.getCaseData().getSerialNum());
         wordMappings.put("firmwarevers",firmwareVers);
-        wordMappings.put("reportedproblem", "problem");
+        wordMappings.put("reportedproblem", reportedIssueField.getText());
         wordMappings.put("netboard", netBoard);
         wordMappings.put("lithium", lithium);
         wordMappings.put("battery", SYnergy.getInitialParts().getBattery());
@@ -868,10 +904,10 @@ public class MainController implements Initializable
         wordMappings.put("motherboard", SYnergy.getInitialParts().getMotherboard());
         wordMappings.put("interfaceboard", SYnergy.getInitialParts().getInterfaceBoard());
         wordMappings.put("firstboot", String.join(" ",SYnergy.getDiagnoses().getTurnsOnList()));
-        wordMappings.put("diagnoses", String.join(" ",SYnergy.getDiagnoses().getMiscList()));
+        wordMappings.put("diagnoses", builder);
         wordMappings.put("solutions", "solutions");
         wordMappings.put("partsreplaced", "parts replaced");
-        wordMappings.put("initials", initialsField.getText());
+        wordMappings.put("initials", SYnergy.getCaseData().getInitials());
 
         wordMLPackage.getMainDocumentPart().variableReplace(wordMappings);
 
@@ -880,8 +916,8 @@ public class MainController implements Initializable
         Docx4J.save(wordMLPackage, rmaNotes, Docx4J.FLAG_NONE);
         logger.info("Successfully saved "+outputFile + " at "+rmaNotes.getPath());
 
-        handler.saveSYObject(SYnergy, new SimpleDateFormat("yyyy-dd-MM").format(new Date()) + "_" + custNameField.getText() + "_CAS" + caseNumField.getText() + "-"+quantity);
-        quantity = null;
+
+        handler.saveSYObject(SYnergy, dataOutputFileName);
     }
 
     @FXML
@@ -897,7 +933,7 @@ public class MainController implements Initializable
 
             root.setStyle(node.getScene().getRoot().getStyle());
             fileOpenStage.setTitle("Open");
-            fileOpenStage.setScene(new Scene(root, 600, 400));
+            fileOpenStage.setScene(new Scene(root, 780, 400));
             fileOpenStage.initModality(Modality.WINDOW_MODAL);
             //fileOpenStage.initStyle(StageStyle.UNDECORATED);
 
@@ -917,6 +953,53 @@ public class MainController implements Initializable
                 @Override
                 public void handle(WindowEvent windowEvent)
                 {
+                    wifiCommBox.setSelected(false);
+                    gprsBox.setSelected(false);
+
+                    SYnergy = Context.getInstance().currentClock();
+                    if (SYnergy.getInitialParts() == null || SYnergy.getDiagnoses() == null)
+                    {
+                        return;
+                    }
+                    setClockData(SYnergy.getInitialParts().getModel(), modelSet, modelGroup);
+                    setClockData(SYnergy.getInitialParts().getReader(), readerSet, readerGroup);
+                    setClockData(SYnergy.getInitialParts().getFpuType(), fpuTypeSet, fpuTypeGroup);
+                    setClockData(SYnergy.getInitialParts().getFpuSize(), fpuSizeSet, fpuSizeGroup);
+                    setClockData(SYnergy.getInitialParts().getCommunication(), communicationSet, communicationGroup);
+
+                    String tempStr =  SYnergy.getInitialParts().getCommunication();
+                    if (tempStr.toUpperCase().contains("WIFI"))
+                    {
+                        wifiCommBox.setSelected(true);
+                    }
+                    if (tempStr.toUpperCase().contains("GPRS"))
+                    {
+                        gprsBox.setSelected(true);
+                    }
+
+                    if (SYnergy.getInitialParts().getInterfaceBoard() != null)
+                    {
+                        setClockData(SYnergy.getInitialParts().getInterfaceBoard(),interfaceBoardSet,interfaceGroup);
+                    }
+
+                    setClockData(SYnergy.getInitialParts().getMotherboard(), motherboardSet, motherboardGroup);
+                    setClockData(SYnergy.getInitialParts().getCoreboard(), coreboardSet, coreboardGroup);
+                    setClockData(SYnergy.getInitialParts().getSdCard(), sdCardSet, sdCardGroup);
+                    setClockData(SYnergy.getInitialParts().getBattery(), batterySet, batteryGroup);
+
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+
+                    reportedIssueField.setText(SYnergy.getCaseData().getProblem());
+                    recvDatePicker.setValue(SYnergy.getCaseData().getReceiveLocalDate());
+                    macField.setText(SYnergy.getInitialParts().getMac());
+                    imageField.setText(SYnergy.getInitialParts().getImage());
+                    versionField.setText(SYnergy.getInitialParts().getVersion());
+                    custNameField.setText(SYnergy.getCaseData().getCustomerName());
+                    caseNumField.setText(SYnergy.getCaseData().getCaseNum());
+                    serialNumField.setText(SYnergy.getCaseData().getSerialNum());
+                    initialsField.setText(SYnergy.getCaseData().getInitials());
+                    qtyOneField.setText(SYnergy.getCaseData().getQtyOne());
+                    qtyTwoField.setText(SYnergy.getCaseData().getQtyTwo());
 
                 }
             });
@@ -925,8 +1008,6 @@ public class MainController implements Initializable
             exception.printStackTrace();
         }
     }
-
-
 
     @FXML
     private void darkMode(ActionEvent event)
@@ -944,6 +1025,17 @@ public class MainController implements Initializable
             darkLight = false;
         }
 
+    }
+
+    private void setClockData(String data, Set<RadioButton> set, ToggleGroup group )
+    {
+        for (RadioButton tempBtn : set)
+        {
+            if (tempBtn.getText().equals(data))
+            {
+                group.selectToggle(tempBtn);
+            }
+        }
     }
 
 

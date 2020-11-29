@@ -156,38 +156,38 @@ public class DiagnosesController implements Initializable
             turnsOnList.add("Fully loads " + currentParts.getVersion() + " " + currentParts.getImage());
 
         if (readerFunctionBox.isVisible() && !readerFunctionBox.isSelected())
-            functionsList.add(currentParts.getReader() + " Functions,");
+            functionsList.add(currentParts.getReader() + " functions\n");
         else if (readerFunctionBox.isVisible() && readerFunctionBox.isSelected())
-            functionsList.add(currentParts.getReader() + " does not function,");
+            functionsList.add(currentParts.getReader() + " reader does not function\n");
         if (fpuFunctionBox.isVisible() && !fpuFunctionBox.isSelected())
-            functionsList.add(currentParts.getFpuType() + " " + currentParts.getFpuSize() + " FPU functions");
+            functionsList.add(currentParts.getFpuType() + " " + currentParts.getFpuSize() + " FPU functions\n");
         else if(fpuFunctionBox.isVisible() && fpuFunctionBox.isSelected())
-            functionsList.add(currentParts.getFpuType() + " " + currentParts.getFpuSize() + " FPU does not function");
+            functionsList.add(currentParts.getFpuType() + " " + currentParts.getFpuSize() + " FPU reader does not function\n");
         if (keypadFunctionBox.isSelected())
-            functionsList.add("keypad functions.");
-        else functionsList.add("keypad does not function.");
+            functionsList.add("Keypad functions\n");
+        else functionsList.add("Keypad does not function\n");
 
         if (fadedLCDBox.isSelected())
-            miscList.add("Screen is faded");
+            miscList.add("Screen is faded\n");
         if (brokenLCDBox.isSelected())
-            miscList.add("Screen is broken");
+            miscList.add("Screen is broken\n");
         if (missingUSBCoverBox.isSelected())
-            miscList.add("Missing Rubber USB Cover");
+            miscList.add("Missing Rubber USB Cover\n");
         if (frontCaseBox.isSelected())
-            miscList.add("Front case is scratched");
+            miscList.add("Front case is scratched\n");
         if (backCaseBox.isSelected())
-            miscList.add("Back case is scratched");
+            miscList.add("Back case is scratched\n");
         if (sidePanelBox.isSelected())
-            miscList.add("Side panel is scratched");
+            miscList.add("Side panel is scratched\n");
 
         if (noSDReadBox.isSelected())
-            imageIssuesList.add("No SD card for clock to read from");
+            imageIssuesList.add("No SD card for clock to read from\n");
         if (error117Box.isSelected())
-            imageIssuesList.add("Clock cannot read from a block in memory, Error: -117");
+            imageIssuesList.add("Clock cannot read from a block in memory, Error: -117\n");
         if (incorrectVersBox.isSelected())
-            imageIssuesList.add("Clock has incorrect version " + currentParts.getVersion() + " loaded");
+            imageIssuesList.add("Clock has incorrect version loaded (Version " + currentParts.getVersion() + ")\n");
         if (corruptedImageBox.isSelected())
-            imageIssuesList.add("Image is corrupted");
+            imageIssuesList.add("Image is corrupted\n");
 
         if (other1Box.isSelected())
             otherIssuesList.add(other1Field.getText());

@@ -1,12 +1,17 @@
 package diagnostics;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.Date;
 
 public class CaseData implements Serializable
 {
     private static final long serialVersionUID = -8753677477464695660L;
+    private String problem;
+
+
+
     private Date startDate;
     private LocalDate receiveDate;
     private String customerName;
@@ -15,9 +20,11 @@ public class CaseData implements Serializable
     private String initials;
     private String qtyOne;
     private String qtyTwo;
+    private SimpleDateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
 
-    public CaseData(Date startDate, LocalDate receiveDate, String customerName, String caseNum, String serialNum, String initials, String qtyOne, String qtyTwo)
+    public CaseData(String problem, Date startDate, LocalDate receiveDate, String customerName, String caseNum, String serialNum, String initials, String qtyOne, String qtyTwo)
     {
+        this.problem = problem;
         this.startDate = startDate;
         this.receiveDate = receiveDate;
         this.customerName = customerName;
@@ -28,12 +35,20 @@ public class CaseData implements Serializable
         this.qtyTwo = qtyTwo;
     }
 
-    public Date getStartDate()
-    {
-        return startDate;
+    public String getProblem() {
+        return problem;
     }
 
-    public LocalDate getReceiveDate()
+    public String getStartDate()
+    {
+        return simpleFormat.format(startDate);
+    }
+
+    public String getReceiveDate()
+    {
+        return simpleFormat.format(java.sql.Date.valueOf(receiveDate));
+    }
+    public LocalDate getReceiveLocalDate()
     {
         return receiveDate;
     }
