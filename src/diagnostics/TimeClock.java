@@ -17,6 +17,8 @@ public class TimeClock implements Serializable
 
     private ReplacedPartData replacedParts;
 
+    private CaseData caseData;
+
     public TimeClock()
     {
         initialParts = null;
@@ -26,6 +28,8 @@ public class TimeClock implements Serializable
         solutions = null;
 
         replacedParts = null;
+
+        caseData = null;
     }
 
     public InitialPartsData getInitialParts()
@@ -68,15 +72,22 @@ public class TimeClock implements Serializable
         this.replacedParts = replacedParts;
     }
 
+    public void setCaseData(CaseData caseData)
+    {
+        this.caseData = caseData;
+    }
+
     public void clear()
     {
-        initialParts = null;
+            initialParts = null;
 
-        diagnoses = null;
+            diagnoses = null;
 
-        solutions = null;
+            solutions = null;
 
-        replacedParts = null;
+            replacedParts = null;
+
+            caseData  = null;
     }
 
     public boolean isComplete()

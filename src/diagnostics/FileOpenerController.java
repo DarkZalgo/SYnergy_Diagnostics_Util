@@ -22,7 +22,7 @@ public class FileOpenerController
     @FXML
     public void readSYObjects(ActionEvent event) throws IOException, ClassNotFoundException
     {
-        File dataDirectory = new File("."+File.separator + "data");
+        File dataDirectory = new File("." + File.separator + "data");
         if(!dataDirectory.exists())
         {
             dataDirectory.mkdir();
@@ -36,9 +36,11 @@ public class FileOpenerController
 
             Iterator savedFiles = FileUtils.iterateFiles(dataDirectory, null, false);
 
-            while (savedFiles.hasNext()) {
+            while (savedFiles.hasNext())
+            {
                 File temp = (File) savedFiles.next();
-                if (temp.getName().contains(".saclock")) {
+                if (temp.getName().substring(temp.getName().length() - 8).equals(".saclock"))
+                {
                     clocks.add(handler.readSYObject(temp.getPath()));
                 }
             }

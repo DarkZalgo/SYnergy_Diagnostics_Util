@@ -16,9 +16,6 @@ public class SYDiagnostics extends Application
         primaryStage.setScene(new Scene(root, 850, 620));
         primaryStage.setResizable(false);
         primaryStage.show();
-
-
-
     }
 
 

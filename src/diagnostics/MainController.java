@@ -36,13 +36,14 @@ public class MainController implements Initializable
     @FXML TextField serialNumField, caseNumField, initialsField;
     @FXML TextField connectionField;
     @FXML TextField otherCardField;
-    @FXML TextField macField, imageField, versionField;
+    @FXML TextField macField, imageField, versionField, custNameField;
+    @FXML TextField qtyOneField, qtyTwoField;
 
     @FXML TextArea diagnosesArea, solutionsArea, partsReplacedArea;
 
     @FXML CheckBox wifiCommBox, gprsBox;
 
-    @FXML Label connectionLabel;
+    @FXML Label connectionLabel, qtyOfLabel;
 
     @FXML Button connectBtn, diagnosesBtn, solutionsBtn;
 
@@ -59,6 +60,8 @@ public class MainController implements Initializable
     @FXML RadioButton switchNoClasp, switchNewClasp, jumperNewClasp, jumperOldClasp;
 
     @FXML DatePicker recvDatePicker;
+
+    @FXML TabPane rmaPane;
 
     ToggleGroup modelGroup = new ToggleGroup();
     ToggleGroup readerGroup = new ToggleGroup();
@@ -111,9 +114,6 @@ public class MainController implements Initializable
 
     SimpleDateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
 
-
-
-
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
@@ -150,8 +150,11 @@ public class MainController implements Initializable
         solutionsArea.setEditable(false);
         partsReplacedArea.setEditable(false);
 
+        rmaPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         connectionLabel.setVisible(false);
+        qtyOfLabel.setVisible(false);
+        qtyTwoField.setVisible(false);
 
         for(RadioButton modelRadio : modelSet)
         {
@@ -492,18 +495,7 @@ public class MainController implements Initializable
             }
         });
 
-        macField.textProperty().addListener(new ChangeListener<String>()
-        {
-            @Override
-            public void changed(ObservableValue<? extends String> observableValue, String s, String t1)
-            {
-                if (macField.getText().length() > 17)
-                {
-                    s = macField.getText().substring(0, 17);
-                    macField.setText(s);
-                }
-            }
-        });
+
 
         gprsBox.selectedProperty().addListener(new ChangeListener<Boolean>()
         {
@@ -529,6 +521,55 @@ public class MainController implements Initializable
                  }
                  interfaceData.clear();
              }
+            }
+        });
+
+        macField.textProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1)
+            {
+                if (macField.getText().length() > 17)
+                {
+                    s = macField.getText().substring(0, 17);
+                    macField.setText(s);
+                }
+            }
+        });
+
+        serialNumField.textProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1)
+            {
+                if (!t1.matches("\\d*"))
+                {
+                    serialNumField.setText(t1.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
+        qtyOneField.textProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> observableValue, String s, String t1)
+            {
+                if (!t1.matches("\\d*"))
+                {
+                    qtyOneField.setText(t1.replaceAll("[^\\d]", ""));
+                }
+
+                if (qtyOneField.getText().length() > 0 && Integer.parseInt(qtyOneField.getText()) > 1)
+                {
+                    qtyOfLabel.setVisible(true);
+                    qtyTwoField.setVisible(true);
+                }
+                else
+                {
+                    qtyOfLabel.setVisible(false);
+                    qtyTwoField.setVisible(false);
+                    qtyTwoField.setText("");
+                }
             }
         });
 
@@ -560,11 +601,18 @@ public class MainController implements Initializable
         macField.setText("");
         imageField.setText("");
         versionField.setText("");
+        qtyOneField.setText("");
+        qtyTwoField.setText("");
+        custNameField.setText("");
 
+        qtyOfLabel.setVisible(false);
+        qtyTwoField.setVisible(false);
         connectionLabel.setVisible(false);
 
         wifiCommBox.setSelected(false);
         gprsBox.setSelected(false);
+
+        recvDatePicker.getEditor().clear();
 
         modelData.clear();
         readerData.clear();
@@ -577,7 +625,13 @@ public class MainController implements Initializable
         sdCardData.clear();
         batteryData.clear();
         interfaceData.clear();
+        try
+        {
         SYnergy.clear();
+        }
+        catch(NullPointerException ignored)
+        {
+        }
     }
 
     @FXML
@@ -598,6 +652,46 @@ public class MainController implements Initializable
 
                 errorMsg += tmpData.getGroupName()+"\n";
             }
+        }
+        if (recvDatePicker.getValue() != null)
+        {
+            count++;
+            errorMsg+="Receive Date Field\n";
+        }
+        if (!(imageField.getText().length() > 0))
+        {
+            count++;
+            errorMsg+="Image Field\n";
+        }
+        if (!(versionField.getText().length() > 0))
+        {
+            count++;
+            errorMsg+="Version Field\n";
+        }
+        if (!(custNameField.getText().length() > 0))
+        {
+            count++;
+            errorMsg+="Customer Name Field\n";
+        }
+        if (!(caseNumField.getText().length() > 0))
+        {
+            count++;
+            errorMsg+="Case Number Field\n";
+        }
+        if (!(serialNumField.getText().length() > 0))
+        {
+            count++;
+            errorMsg+="Serial Number Field\n";
+        }
+        if (!(initialsField.getText().length() > 0))
+        {
+            count++;
+            errorMsg+="Initials Field\n";
+        }
+        if (!(qtyOneField.getText().length() > 0))
+        {
+            count++;
+            errorMsg+="Quantity Field";
         }
 
         if(count > 0)
@@ -644,10 +738,7 @@ public class MainController implements Initializable
                     imageField.getText(),
                     versionField.getText());
 
-
-
             Node node = (Node) event.getSource();
-
 
             try {
                 diagnosesStage = new Stage();
@@ -732,88 +823,65 @@ public class MainController implements Initializable
         }
     }
 
-    public File getResourceAsFile(String resourcePath) {
-        try {
-            InputStream in = this.getClass().getClassLoader().getResourceAsStream(resourcePath);
-            if (in == null) {
-                System.out.println("=========================");
-                System.out.println("In Is Null");
-                System.out.println("=========================");
-                return null;
-            }
-
-            File tempFile = File.createTempFile(String.valueOf(in.hashCode()), ".tmp");
-            tempFile.deleteOnExit();
-
-            try (FileOutputStream out = new FileOutputStream(tempFile)) {
-                //copy stream
-                byte[] buffer = new byte[1024];
-                int bytesRead;
-                while ((bytesRead = in.read(buffer)) != -1) {
-                    out.write(buffer, 0, bytesRead);
-                }
-            }
-            return tempFile;
-        } catch (IOException e)
-        {
-            System.out.println("=========================");
-            System.out.println("Return Null");
-            System.out.println("=========================");
-            e.printStackTrace();
-            return null;
-        }
-    }
-
     @FXML
     private void writeToFile(ActionEvent event) throws Exception
     {
-        String outputFile ="";
-        String outputPath ="";
+        String outputFile ="RMA CAS " + caseNumField.getText() + ".docx";
+        String quantity = "";
+        String firmwareVers = "N/A";
+        String netBoard = "N/A";
+        String lithium = "N/A";
+
+        if (qtyTwoField.getText().length() > 0)
+        {
+            quantity = qtyOneField.getText() + "-of-" + qtyTwoField.getText();
+        }
+        else
+        {
+            quantity = qtyOneField.getText();
+        }
+
         Node node = (Node) event.getSource();
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialFileName("RMA CAS " + caseNumField.getText() + ".docx");
+        fileChooser.setInitialFileName(outputFile);
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Word Document Files (*.docx)","*.docx");
         fileChooser.getExtensionFilters().add(extFilter);
-        ClassLoader loader = this.getClass().getClassLoader();
-        //URL resource = loader.getResource("resources" + File.separator + "template.docx");
-        //URL resource = loader.getResourceAsStream("resources" + File.separator + "template.docx");
-       // WordprocessingMLPackage wordMLPackage = Docx4J.load(getResourceAsFile(File.separator + "resources" + File.separator + "template.docx"));
-        WordprocessingMLPackage wordMLPackage = Docx4J.load(getResourceAsFile("resources/template.docx"));
+       // ClassLoader loader = this.getClass().getClassLoader();
+        WordprocessingMLPackage wordMLPackage = Docx4J.load(handler.getResourceAsFile("resources/template.docx"));
 
         HashMap wordMappings = new HashMap();
-        SimpleDateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
         VariablePrepare.prepare(wordMLPackage);
         wordMappings.put("casenum", caseNumField.getText());
-        wordMappings.put("qty","qty");
-        wordMappings.put("recvdate",simpleFormat.format(java.sql.Date.valueOf(recvDatePicker.getValue())));
-        wordMappings.put("startdate",simpleFormat.format(new Date()));
-        wordMappings.put("model",SYnergy.getInitialParts().getModel() + " " + SYnergy.getInitialParts().getFpuSize() +
-                " "+ SYnergy.getInitialParts().getFpuType() + "/" +SYnergy.getInitialParts().getReader()
-                + "/" + SYnergy.getInitialParts().getCommunication());
-        wordMappings.put("serialnum",serialNumField.getText());
-        wordMappings.put("firmwarevers","firmware");
-        wordMappings.put("reportedproblem","problem");
-        wordMappings.put("netboard","net board");
-        wordMappings.put("lithium", "voltage");
+        wordMappings.put("qty", quantity);
+        wordMappings.put("recvdate", simpleFormat.format(java.sql.Date.valueOf(recvDatePicker.getValue())));
+        wordMappings.put("startdate", simpleFormat.format(new Date()));
+        wordMappings.put("model", SYnergy.getInitialParts().getModel() + " " + SYnergy.getInitialParts().getFpuSize()
+                + "/" +SYnergy.getInitialParts().getReader() + "/" + SYnergy.getInitialParts().getCommunication());
+        wordMappings.put("serialnum", serialNumField.getText());
+        wordMappings.put("firmwarevers",firmwareVers);
+        wordMappings.put("reportedproblem", "problem");
+        wordMappings.put("netboard", netBoard);
+        wordMappings.put("lithium", lithium);
         wordMappings.put("battery", SYnergy.getInitialParts().getBattery());
-        wordMappings.put("coreboard",SYnergy.getInitialParts().getCoreboard());
-        wordMappings.put("sdcard",SYnergy.getInitialParts().getSdCard());
-        wordMappings.put("motherboard",SYnergy.getInitialParts().getMotherboard());
+        wordMappings.put("coreboard", SYnergy.getInitialParts().getCoreboard());
+        wordMappings.put("sdcard", SYnergy.getInitialParts().getSdCard());
+        wordMappings.put("motherboard", SYnergy.getInitialParts().getMotherboard());
         wordMappings.put("interfaceboard", SYnergy.getInitialParts().getInterfaceBoard());
         wordMappings.put("firstboot", String.join(" ",SYnergy.getDiagnoses().getTurnsOnList()));
         wordMappings.put("diagnoses", String.join(" ",SYnergy.getDiagnoses().getMiscList()));
-        wordMappings.put("solutions","solutions");
-        wordMappings.put("partsreplaced","parts replaced");
-        wordMappings.put("initials",initialsField.getText());
+        wordMappings.put("solutions", "solutions");
+        wordMappings.put("partsreplaced", "parts replaced");
+        wordMappings.put("initials", initialsField.getText());
 
         wordMLPackage.getMainDocumentPart().variableReplace(wordMappings);
 
         File rmaNotes = fileChooser.showSaveDialog(node.getScene().getWindow());
         logger.info("Starting save operation");
         Docx4J.save(wordMLPackage, rmaNotes, Docx4J.FLAG_NONE);
-        logger.info("Successfully saved "+outputFile + " at "+outputPath);
+        logger.info("Successfully saved "+outputFile + " at "+rmaNotes.getPath());
 
-        handler.saveSYObject(SYnergy, new SimpleDateFormat("yyyy-dd-mm").format(new Date()) + "-" + caseNumField.getText() + "-");
+        handler.saveSYObject(SYnergy, new SimpleDateFormat("yyyy-dd-MM").format(new Date()) + "_" + custNameField.getText() + "_CAS" + caseNumField.getText() + "-"+quantity);
+        quantity = null;
     }
 
     @FXML
