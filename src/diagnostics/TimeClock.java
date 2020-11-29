@@ -3,8 +3,12 @@ package diagnostics;
 import javafx.scene.control.Alert;
 import javafx.scene.layout.Region;
 
-public class TimeClock
+import java.io.Serializable;
+
+public class TimeClock implements Serializable
 {
+    private static final long serialVersionUID=-7236685044626487119L;
+
     private InitialPartsData initialParts = null;
 
     private DiagnosticData diagnoses = null;
@@ -23,29 +27,6 @@ public class TimeClock
 
         replacedParts = null;
     }
-
-    public TimeClock(InitialPartsData initialParts)
-    {
-        this.initialParts = initialParts;
-    }
-
-
-    public TimeClock(DiagnosticData diagnoses)
-    {
-        this.diagnoses = diagnoses;
-    }
-
-
-    public TimeClock(SolutionData solutions)
-    {
-        this.solutions = solutions;
-    }
-
-    public TimeClock(ReplacedPartData replacedParts)
-    {
-        this.replacedParts = replacedParts;
-    }
-
 
     public InitialPartsData getInitialParts()
     {

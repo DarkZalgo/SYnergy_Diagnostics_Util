@@ -1,9 +1,11 @@
 package diagnostics;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class DiagnosticData
+public class DiagnosticData implements Serializable
 {
+    private static final long serialVersionUID = -2222121479548445444L;
     private ArrayList<String> turnsOnList;
     private ArrayList<String> functionsList;
     private ArrayList<String> miscList;

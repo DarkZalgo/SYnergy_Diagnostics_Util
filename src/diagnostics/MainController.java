@@ -28,6 +28,7 @@ import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.swing.*;
 import javax.swing.text.DateFormatter;
 
 public class MainController implements Initializable
@@ -97,7 +98,7 @@ public class MainController implements Initializable
 
     Set<ToggleGroup> toggleGroupSet;
 
-    Stage diagnosesStage;
+    Stage diagnosesStage, fileOpenStage;
 
     boolean completion;
     boolean darkLight = false;
@@ -105,6 +106,10 @@ public class MainController implements Initializable
     TimeClock SYnergy;
 
     Logger logger = LoggerFactory.getLogger("Log");
+
+    FileHandler handler = new FileHandler();
+
+    SimpleDateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
 
 
 
@@ -808,44 +813,52 @@ public class MainController implements Initializable
         Docx4J.save(wordMLPackage, rmaNotes, Docx4J.FLAG_NONE);
         logger.info("Successfully saved "+outputFile + " at "+outputPath);
 
-
-        /*
-        int charCount = 0;
-
-        template = new XWPFDocument(new FileInputStream(new File(resource.toURI())));
-        extractor = new XWPFWordExtractor(template);
-        String templateText = extractor.getText();
-        if (templateText.contains("[MOTHERBOARD]"))
-            templateText = templateText.replace("[MOTHERBOARD]", SYnergy.getInitialParts().getMotherboard());
-
-
-        VariablePrepare.prepare();
-        char[] chars = templateText.toCharArray();
-
-        for(char c : chars)
-            charCount++;
-        rmaNotes = new XWPFDocument();
-        XWPFParagraph paragraph = rmaNotes.createParagraph();
-
-        List<XWPFParagraph>paragraphs = new ArrayList<XWPFParagraph>();
-        for (int i = 0; i<charCount+1; i++)
-            paragraphs.add(rmaNotes.createParagraph());
-
-        XWPFRun run = paragraph.createRun();
-        StringTokenizer tokenizer = new StringTokenizer(templateText, "\n");
-        int j = 0;
-        while (tokenizer.hasMoreElements())
-        {
-            paragraphs.get(j).setAlignment(ParagraphAlignment.LEFT);
-            paragraphs.get(j).setSpacingAfter(0);
-            paragraphs.get(j).setSpacingBefore(0);
-            run = paragraphs.get(j).createRun();
-            run.setText(tokenizer.nextElement().toString());
-            j++;
-        }
-
-        rmaNotes.write(new FileOutputStream("FinishedNotes.docx"));*/
+        handler.saveSYObject(SYnergy, new SimpleDateFormat("yyyy-dd-mm").format(new Date()) + "-" + caseNumField.getText() + "-");
     }
+
+    @FXML
+    private void readFromFile(ActionEvent event)
+    {
+        Node node = (Node) event.getSource();
+
+
+        try {
+            fileOpenStage = new Stage();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("fileOpenerWindow.fxml"));
+            Parent root = loader.load();
+
+            root.setStyle(node.getScene().getRoot().getStyle());
+            fileOpenStage.setTitle("Open");
+            fileOpenStage.setScene(new Scene(root, 600, 400));
+            fileOpenStage.initModality(Modality.WINDOW_MODAL);
+            //fileOpenStage.initStyle(StageStyle.UNDECORATED);
+
+
+            Window primaryWindow = node.getScene().getWindow();
+
+            fileOpenStage.initOwner(primaryWindow);
+
+            fileOpenStage.setX(primaryWindow.getX() + 200);
+            fileOpenStage.setY(primaryWindow.getY() + 100);
+
+            fileOpenStage.setResizable(false);
+
+            fileOpenStage.show();
+            fileOpenStage.setOnHiding(new EventHandler<WindowEvent>()
+            {
+                @Override
+                public void handle(WindowEvent windowEvent)
+                {
+
+                }
+            });
+        } catch (IOException exception)
+        {
+            exception.printStackTrace();
+        }
+    }
+
+
 
     @FXML
     private void darkMode(ActionEvent event)
@@ -864,4 +877,6 @@ public class MainController implements Initializable
         }
 
     }
+
+
 }

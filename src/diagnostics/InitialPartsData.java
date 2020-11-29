@@ -1,7 +1,11 @@
 package diagnostics;
 
-public class InitialPartsData
+import java.io.Serializable;
+
+public class InitialPartsData implements Serializable
 {
+    private static final long serialVersionUID = -333047085423597354L;
+
     private String model;
     private String reader;
     private String fpuType;

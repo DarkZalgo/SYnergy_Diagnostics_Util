@@ -74,7 +74,7 @@
                         <RadioButton fx:id="blueBattery" layoutX="710.0" layoutY="161.0" mnemonicParsing="false" text="Blue" />
                         <RadioButton fx:id="silverBattery" layoutX="710.0" layoutY="185.0" mnemonicParsing="false" text="Silver" />
                         <RadioButton fx:id="noneBattery" layoutX="711.0" layoutY="209.0" mnemonicParsing="false" text="None" />
-                        <Button layoutX="727.0" layoutY="504.0" mnemonicParsing="false" onAction="#refreshAll" text="Clear All Fields" />
+                        <Button layoutX="727.0" layoutY="504.0" mnemonicParsing="false" onAction="#refreshAll" prefWidth="114.1" text="Clear All Fields" />
                         <RadioButton fx:id="mifareReader" layoutX="261.0" layoutY="33.0" mnemonicParsing="false" text="Mifare" />
                         <Label layoutX="15.0" layoutY="352.0" prefHeight="20.0" prefWidth="68.0" text="Initials" textAlignment="CENTER" wrapText="true" />
                         <TextField fx:id="initialsField" layoutX="85.0" layoutY="349.0" prefHeight="26.0" prefWidth="80.0" />
@@ -103,6 +103,7 @@
                         <TextArea fx:id="partsReplacedArea" layoutX="447.0" layoutY="264.0" prefHeight="261.0" prefWidth="115.4" />
                         <DatePicker fx:id="recvDatePicker" layoutX="688.0" layoutY="278.0" prefHeight="26.0" prefWidth="123.0" />
                         <Label layoutX="587.0" layoutY="283.0" text="Receive Date" />
+                        <Button fx:id="openBtn" layoutX="583.0" layoutY="546.0" mnemonicParsing="false" onAction="#readFromFile" prefWidth="114.1" text="Open" />
                      </children>
                   </Pane>
                </content>
