@@ -863,6 +863,12 @@ public class MainController implements Initializable
         builder.append(String.join(" ", SYnergy.getDiagnoses().getOtherIssuesList()));
         builder.append(String.join(" ", SYnergy.getDiagnoses().getMiscList()));
 
+        File rmaDir = new File("./RMAs");
+        if (!rmaDir.exists())
+        {
+            rmaDir.mkdir();
+        }
+
         if (SYnergy.getCaseData().getQtyTwo().length() > 0 && Integer.parseInt(SYnergy.getCaseData().getQtyTwo()) > 1)
         {
             quantity = " " + SYnergy.getCaseData().getQtyOne() + " of " + SYnergy.getCaseData().getQtyTwo();
@@ -883,6 +889,7 @@ public class MainController implements Initializable
         fileChooser.setInitialFileName(outputFile);
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Word Document Files (*.docx)","*.docx");
         fileChooser.getExtensionFilters().add(extFilter);
+        fileChooser.setInitialDirectory(rmaDir);
         WordprocessingMLPackage wordMLPackage = Docx4J.load(handler.getResourceAsFile("resources/template.docx"));
 
         HashMap wordMappings = new HashMap();

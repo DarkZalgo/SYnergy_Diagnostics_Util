@@ -21,6 +21,12 @@ public class FileHandler
     public void saveSYObject(TimeClock clock, String fileName) throws IOException
     {
         fileName = fileName + ".saclock";
+        File outPutDir = new File("." + File.separator+"data");
+        if (!outPutDir.exists())
+        {
+            outPutDir.mkdir();
+        }
+
         System.out.println("Starting save operation for " +fileName);
         FileOutputStream sacOutStream = new FileOutputStream(new File("." + File.separator+"data" + File.separator + fileName));
         ObjectOutputStream clockOutStream = new ObjectOutputStream(sacOutStream);
