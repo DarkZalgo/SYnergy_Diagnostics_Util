@@ -1,5 +1,16 @@
 package diagnostics;
 
+import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.layout.Region;
+import javafx.stage.Stage;
+
+import java.net.URL;
+import java.util.ResourceBundle;
+
 public class SolutionsController implements Initializable
 {
     InitialPartsData currentParts;
@@ -12,7 +23,7 @@ public class SolutionsController implements Initializable
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
       SYnergy = Context.getInstance().currentClock();
-      currentParts = SYnergy.getInitialPartsData;      
+      currentParts = SYnergy.getInitialParts();
     }
       
       private boolean isComplete()
@@ -53,6 +64,11 @@ public class SolutionsController implements Initializable
         Node node = (Node) event.getSource();
         Stage curStage = (Stage) node.getScene().getWindow();
         curStage.close();
+    }
+
+    private void setSolutions()
+    {
+
     }
     
 }

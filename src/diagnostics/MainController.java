@@ -116,6 +116,7 @@ public class MainController implements Initializable
 
     SimpleDateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
 
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
@@ -150,7 +151,6 @@ public class MainController implements Initializable
 
         diagnosesArea.setEditable(false);
         solutionsArea.setEditable(false);
-        partsReplacedArea.setEditable(false);
 
         rmaPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
@@ -723,7 +723,10 @@ public class MainController implements Initializable
     @FXML
     private void addDiagnoses(ActionEvent event)
     {
+        Alert outdatedAlert;
+        String alertMsg = "";
         completion = isComplete();
+
         if (completion)
         {
             if (gprsBox.isSelected())
@@ -734,6 +737,26 @@ public class MainController implements Initializable
             {
                 communicationData.setToggleData(communicationData.getToggleData() + "/WIFI");
             }
+
+            if (interfaceData.getToggleData().equals("Jumper Old Clasp"))
+            {
+                alertMsg+= "Jumper Old Clasp interface board is outdated and is automatically replaced\n";
+            }
+            if (batteryData.getToggleData().equals("Silver"))
+            {
+                alertMsg += "Silver battery backup is outdated and is automatically replaced";
+            }
+
+            if (batteryData.getToggleData().equals("Silver") || interfaceData.getToggleData().equals("Jumper Old Clasp") )
+            {
+                outdatedAlert = new Alert(Alert.AlertType.INFORMATION);
+                outdatedAlert.setTitle("Alert");
+                outdatedAlert.setContentText(alertMsg);
+                outdatedAlert.setHeaderText("Outdated Items");
+                outdatedAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+                outdatedAlert.showAndWait();
+            }
+
 
             InitialPartsData synergyParts = new InitialPartsData(
                     modelData.getToggleData(),
@@ -762,7 +785,7 @@ public class MainController implements Initializable
 
                 root.setStyle(node.getScene().getRoot().getStyle());
                 diagnosesStage.setTitle("Diagnoses");
-                diagnosesStage.setScene(new Scene(root, 600, 400));
+                diagnosesStage.setScene(new Scene(root, 625, 520));
                 diagnosesStage.initModality(Modality.WINDOW_MODAL);
                 diagnosesStage.initStyle(StageStyle.UNDECORATED);
 
@@ -785,20 +808,15 @@ public class MainController implements Initializable
                         if (SYnergy.getDiagnoses() !=null)
                         {
                             diagnosesArea.clear();
-                            String issues = "";
-                            for (String s : SYnergy.getDiagnoses().getImageIssuesList()) {
-                                issues += s + "\n";
-                            }
-                            for (String s : SYnergy.getDiagnoses().getFunctionsList()) {
-                                issues += s + "\n";
-                            }
-                            for (String s : SYnergy.getDiagnoses().getMiscList()) {
-                                issues += s + "\n";
-                            }
-                            for (String s : SYnergy.getDiagnoses().getOtherIssuesList()) {
-                                issues += s + "\n";
-                            }
-                            diagnosesArea.appendText(issues);
+                            //String issues = "";
+                            SYnergy.getDiagnoses().getImageIssuesList().stream().forEach((n -> diagnosesArea.appendText(n)));
+                            SYnergy.getDiagnoses().getFunctionsList().stream().forEach((n -> diagnosesArea.appendText(n)));
+
+                            SYnergy.getDiagnoses().getMiscList().stream().forEach((n -> diagnosesArea.appendText(n)));
+
+                            SYnergy.getDiagnoses().getOtherIssuesList().stream().forEach((n -> diagnosesArea.appendText(n)));
+
+                            //diagnosesArea.appendText(issues);
                         }
                     }
                 });
@@ -844,10 +862,21 @@ public class MainController implements Initializable
         String netBoard = "N/A";
         String lithium = "N/A";
         String quantity = "";
+        Date caseDate;
+
+        if (SYnergy.getCaseData() !=null)
+        {
+            caseDate = simpleFormat.parse(SYnergy.getCaseData().getStartDate());
+        }
+        else
+        {
+            caseDate = new Date();
+        }
+
         SYnergy = Context.getInstance().currentClock();
         CaseData caseData = new CaseData(
                 reportedIssueField.getText(),
-                new Date(),
+                caseDate,
                 recvDatePicker.getValue(),
                 custNameField.getText().toUpperCase(),
                 caseNumField.getText(),
@@ -858,10 +887,13 @@ public class MainController implements Initializable
         SYnergy.setCaseData(caseData);
 
         StringBuilder builder = new StringBuilder();
-        builder.append(String.join(" ", SYnergy.getDiagnoses().getImageIssuesList()));
-        builder.append(String.join(" ", SYnergy.getDiagnoses().getFunctionsList()));
-        builder.append(String.join(" ", SYnergy.getDiagnoses().getOtherIssuesList()));
-        builder.append(String.join(" ", SYnergy.getDiagnoses().getMiscList()));
+
+        SYnergy.getDiagnoses().getImageIssuesList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
+        SYnergy.getDiagnoses().getFunctionsList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
+        SYnergy.getDiagnoses().getMiscList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
+        SYnergy.getDiagnoses().getBadPartsList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
+        SYnergy.getDiagnoses().getOtherIssuesList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
+
 
         File rmaDir = new File("./RMAs");
         if (!rmaDir.exists())
@@ -878,11 +910,6 @@ public class MainController implements Initializable
              quantity = SYnergy.getCaseData().getQtyOne();
         }
         String dataOutputFileName = new SimpleDateFormat("yyyy-dd-MM").format(new Date()) + "_" + custNameField.getText() + "_CAS-" + caseNumField.getText() + quantity;
-
-
-        System.out.println(SYnergy.getCaseData().getStartDate());
-
-
 
         Node node = (Node) event.getSource();
         FileChooser fileChooser = new FileChooser();
@@ -919,9 +946,9 @@ public class MainController implements Initializable
         wordMLPackage.getMainDocumentPart().variableReplace(wordMappings);
 
         File rmaNotes = fileChooser.showSaveDialog(node.getScene().getWindow());
-        logger.info("Starting save operation");
+        System.out.println("Starting save operation for" + outputFile);
         Docx4J.save(wordMLPackage, rmaNotes, Docx4J.FLAG_NONE);
-        logger.info("Successfully saved "+outputFile + " at "+rmaNotes.getPath());
+        System.out.println("Successfully saved " + outputFile + " at " + rmaNotes.getPath());
 
 
         handler.saveSYObject(SYnergy, dataOutputFileName);
@@ -931,7 +958,6 @@ public class MainController implements Initializable
     private void readFromFile(ActionEvent event)
     {
         Node node = (Node) event.getSource();
-
 
         try {
             fileOpenStage = new Stage();
@@ -943,7 +969,6 @@ public class MainController implements Initializable
             fileOpenStage.setScene(new Scene(root, 780, 400));
             fileOpenStage.initModality(Modality.WINDOW_MODAL);
             //fileOpenStage.initStyle(StageStyle.UNDECORATED);
-
 
             Window primaryWindow = node.getScene().getWindow();
 
@@ -972,14 +997,16 @@ public class MainController implements Initializable
                     setClockData(SYnergy.getInitialParts().getReader(), readerSet, readerGroup);
                     setClockData(SYnergy.getInitialParts().getFpuType(), fpuTypeSet, fpuTypeGroup);
                     setClockData(SYnergy.getInitialParts().getFpuSize(), fpuSizeSet, fpuSizeGroup);
-                    setClockData(SYnergy.getInitialParts().getCommunication(), communicationSet, communicationGroup);
 
                     String tempStr =  SYnergy.getInitialParts().getCommunication();
-                    if (tempStr.toUpperCase().contains("WIFI"))
+                    System.out.println(tempStr);
+                    setClockData(tempStr.split("/")[0], communicationSet, communicationGroup);
+
+                    if (tempStr.contains("WIFI"))
                     {
                         wifiCommBox.setSelected(true);
                     }
-                    if (tempStr.toUpperCase().contains("GPRS"))
+                    if (tempStr.contains("GPRS"))
                     {
                         gprsBox.setSelected(true);
                     }

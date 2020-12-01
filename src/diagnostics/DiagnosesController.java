@@ -12,16 +12,19 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
+import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 public class DiagnosesController implements Initializable
 {
-    @FXML CheckBox powersOnBox, ledsOnBox, fpuOnBox, blackScreenBox, partialLoadBox, fullLoadBox, loopBox;
+    @FXML CheckBox powersOnBox, ledsOnBox, fpuOnBox, blackScreenBox, partialLoadBox, fullLoadBox, loopBox, noProblemsBox;
     @FXML CheckBox readerFunctionBox, fpuFunctionBox, keypadFunctionBox;
-    @FXML CheckBox fadedLCDBox, brokenLCDBox, missingUSBCoverBox, backCaseBox, frontCaseBox, sidePanelBox;
+    @FXML CheckBox fadedLCDBox, brokenLCDBox, missingUSBCoverBox, backCaseBox, frontCaseBox, sidePanelBox, keyCapsDamagedBox, windowDamagedBox, keypadIncorrectVersionBox;
     @FXML CheckBox noSDReadBox, error117Box, incorrectVersBox, corruptedImageBox;
+    @FXML CheckBox badCoreboardBox, badMotherboardBox, badPOEBox, badKeypadBoardBox, damagedTapeBox, badInterfaceBoardBox, badBatteryBox;
+    @FXML CheckBox outdatedBatteryBox, outdatedInterfaceBoardBox;
     @FXML CheckBox other1Box, other2Box, other3Box, other4Box;
 
     @FXML TextField other1Field, other2Field, other3Field, other4Field;
@@ -139,6 +142,7 @@ public class DiagnosesController implements Initializable
         ArrayList<String> miscList = new ArrayList<>();
         ArrayList<String> imageIssuesList = new ArrayList<>();
         ArrayList<String> otherIssuesList = new ArrayList<>();
+        ArrayList<String> badPartsList = new ArrayList<>();
 
         if(!powersOnBox.isSelected())
             turnsOnList.add("Clock powers on,");
@@ -156,16 +160,18 @@ public class DiagnosesController implements Initializable
             turnsOnList.add("Fully loads " + currentParts.getVersion() + " " + currentParts.getImage());
 
         if (readerFunctionBox.isVisible() && !readerFunctionBox.isSelected())
-            functionsList.add(currentParts.getReader() + " functions\n");
+            functionsList.add(currentParts.getReader() + " reader functions\n");
         else if (readerFunctionBox.isVisible() && readerFunctionBox.isSelected())
             functionsList.add(currentParts.getReader() + " reader does not function\n");
         if (fpuFunctionBox.isVisible() && !fpuFunctionBox.isSelected())
-            functionsList.add(currentParts.getFpuType() + " " + currentParts.getFpuSize() + " FPU functions\n");
+            functionsList.add(currentParts.getFpuType() + " " + currentParts.getFpuSize() + " FPU reader functions\n");
         else if(fpuFunctionBox.isVisible() && fpuFunctionBox.isSelected())
             functionsList.add(currentParts.getFpuType() + " " + currentParts.getFpuSize() + " FPU reader does not function\n");
         if (keypadFunctionBox.isSelected())
-            functionsList.add("Keypad functions\n");
-        else functionsList.add("Keypad does not function\n");
+            functionsList.add("Keypad does not function\n");
+        else functionsList.add("Keypad functions\n");
+        if (noProblemsBox.isSelected())
+            functionsList.add("Unable to replicate problem; clock appears fully functional");
 
         if (fadedLCDBox.isSelected())
             miscList.add("Screen is faded\n");
@@ -174,11 +180,17 @@ public class DiagnosesController implements Initializable
         if (missingUSBCoverBox.isSelected())
             miscList.add("Missing Rubber USB Cover\n");
         if (frontCaseBox.isSelected())
-            miscList.add("Front case is scratched\n");
+            miscList.add("Front case is scratched/damaged\n");
         if (backCaseBox.isSelected())
-            miscList.add("Back case is scratched\n");
+            miscList.add("Back case is scratched/damaged\n");
         if (sidePanelBox.isSelected())
-            miscList.add("Side panel is scratched\n");
+            miscList.add("Side panel is scratched/damaged\n");
+        if (keyCapsDamagedBox.isSelected())
+            miscList.add("Keycaps are damaged\n");
+        if (windowDamagedBox.isSelected())
+            miscList.add("LCD Window is scratched/damaged");
+        if (keypadIncorrectVersionBox.isSelected())
+            miscList.add(SYnergy.getInitialParts().getReader() + " keypad board is incorrect version");
 
         if (noSDReadBox.isSelected())
             imageIssuesList.add("No SD card for clock to read from\n");
@@ -189,6 +201,25 @@ public class DiagnosesController implements Initializable
         if (corruptedImageBox.isSelected())
             imageIssuesList.add("Image is corrupted\n");
 
+        if(badCoreboardBox.isSelected())
+            badPartsList.add("Bad "+ SYnergy.getInitialParts().getCoreboard() + " coreboard");
+        if(badMotherboardBox.isSelected())
+            badPartsList.add("Bad " + SYnergy.getInitialParts().getMotherboard() + " motherboard");
+        if (badPOEBox.isSelected())
+            badPartsList.add("Bad POE module");
+        if (badKeypadBoardBox.isSelected())
+            badPartsList.add("Bad Keypad Board");
+        if (damagedTapeBox.isSelected())
+            badPartsList.add("POE screws/leads breaking through electrical tape");
+        if (badInterfaceBoardBox.isSelected())
+            badPartsList.add("Bad " + SYnergy.getInitialParts().getInterfaceBoard() + " interface board");
+        if (badBatteryBox.isSelected() && !outdatedBatteryBox.isSelected())
+            badPartsList.add("Bad battery backup");
+        if (outdatedBatteryBox.isSelected())
+            badPartsList.add("Silver battery backup is outdated");
+        if (outdatedInterfaceBoardBox.isSelected())
+            badPartsList.add("Jumper Old Clasp interface board is outdated");
+
         if (other1Box.isSelected())
             otherIssuesList.add(other1Field.getText());
         if (other2Box.isSelected())
@@ -198,7 +229,7 @@ public class DiagnosesController implements Initializable
         if (other4Box.isSelected())
             otherIssuesList.add(other4Field.getText());
 
-        diagnoses = new DiagnosticData(turnsOnList, functionsList, miscList, imageIssuesList, otherIssuesList);
+        diagnoses = new DiagnosticData(turnsOnList, functionsList, miscList, imageIssuesList, badPartsList, otherIssuesList);
     }
 
     @FXML
