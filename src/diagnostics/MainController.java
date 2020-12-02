@@ -149,14 +149,14 @@ public class MainController implements Initializable
         batteryGroup.setUserData(batteryData);
         interfaceGroup.setUserData(interfaceData);
 
+        SYnergy = Context.getInstance().currentClock();
+
         diagnosesArea.setEditable(false);
         solutionsArea.setEditable(false);
 
         rmaPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         connectionLabel.setVisible(false);
-       // qtyOfLabel.setVisible(false);
-        //qtyTwoField.setVisible(false);
 
         for(RadioButton modelRadio : modelSet)
         {
@@ -926,6 +926,9 @@ public class MainController implements Initializable
 
         Date caseDate;
 
+        Alert incompleteWarning;
+        Alert notEnoughDataError;
+
         DiagnosticData diagnostics = SYnergy.getDiagnoses();
         SolutionData solutions = SYnergy.getSolutions();
         InitialPartsData currentParts = SYnergy.getInitialParts();
@@ -953,6 +956,22 @@ public class MainController implements Initializable
                 qtyTwoField.getText());
         SYnergy.setCaseData(caseData);
 
+        String dataOutputFileName = new SimpleDateFormat("yyyy-dd-MM").format(new Date()) + "_" + caseData.getCustomerName() + "_CAS-" + caseData.getCaseNum() + quantity;
+        if (!isComplete())
+        {
+            return;
+        }
+        if (diagnostics == null || solutions == null)
+        {
+            incompleteWarning = new Alert(Alert.AlertType.WARNING);
+            incompleteWarning.setTitle("Warning");
+            incompleteWarning.setHeaderText("Incomplete sheet");
+            incompleteWarning.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            incompleteWarning.setContentText("Clock sheet incomplete.\n\nWord document will not be created.\n\nProgress so far will be saved to clock file.");
+            incompleteWarning.showAndWait();
+            handler.saveSYObject(SYnergy, dataOutputFileName);
+            return;
+        }
         StringBuilder diagnosesBuilder = new StringBuilder();
         StringBuilder solutionsBuilder = new StringBuilder();
 
@@ -983,7 +1002,6 @@ public class MainController implements Initializable
         {
              quantity = SYnergy.getCaseData().getQtyOne();
         }
-        String dataOutputFileName = new SimpleDateFormat("yyyy-dd-MM").format(new Date()) + "_" + caseData.getCustomerName() + "_CAS-" + caseData.getCaseNum() + quantity;
 
         Node node = (Node) event.getSource();
         FileChooser fileChooser = new FileChooser();
