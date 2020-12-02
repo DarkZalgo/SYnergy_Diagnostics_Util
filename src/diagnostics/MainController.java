@@ -41,7 +41,7 @@ public class MainController implements Initializable
     @FXML TextField reportedIssueField, macField, imageField, versionField, custNameField;
     @FXML TextField qtyOneField, qtyTwoField;
 
-    @FXML TextArea diagnosesArea, solutionsArea, partsReplacedArea;
+    @FXML TextArea diagnosesArea, solutionsArea;
 
     @FXML CheckBox wifiCommBox, gprsBox;
 
@@ -612,7 +612,6 @@ public class MainController implements Initializable
 
         diagnosesArea.setText("");
         solutionsArea.setText("");
-        partsReplacedArea.setText("");
 
         connectionLabel.setVisible(false);
 
@@ -975,16 +974,16 @@ public class MainController implements Initializable
         StringBuilder diagnosesBuilder = new StringBuilder();
         StringBuilder solutionsBuilder = new StringBuilder();
 
-        diagnostics.getImageIssuesList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
-        diagnostics.getFunctionsList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
-        diagnostics.getMiscList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
-        diagnostics.getBadPartsList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
-        diagnostics.getOtherIssuesList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+        diagnostics.getImageIssuesList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:br/><w:t>")));
+        diagnostics.getFunctionsList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:br/><w:t>")));
+        diagnostics.getMiscList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:br/><w:t>")));
+        diagnostics.getBadPartsList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:br/><w:t>")));
+        diagnostics.getOtherIssuesList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:br/><w:t>")));
 
-        solutions.getImageSolutionsList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:cr/><w:t>")));
-        solutions.getReplacedHardwareList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:cr/><w:t>")));
-        solutions.getReplacedCosmeticsList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:cr/><w:t>")));
-        solutions.getOtherIssuesList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+        solutions.getImageSolutionsList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:br/><w:t>")));
+        solutions.getReplacedHardwareList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:br/><w:t>")));
+        solutions.getReplacedCosmeticsList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:br/><w:t>")));
+        solutions.getOtherIssuesList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:br/><w:t>")));
 
 
 
@@ -1032,7 +1031,6 @@ public class MainController implements Initializable
         wordMappings.put("firstboot", String.join(" ",diagnostics.getTurnsOnList()));
         wordMappings.put("diagnoses", diagnosesBuilder);
         wordMappings.put("solutions", solutionsBuilder);
-        wordMappings.put("partsreplaced", "parts replaced");
         wordMappings.put("initials", caseData.getInitials());
 
         wordMLPackage.getMainDocumentPart().variableReplace(wordMappings);
@@ -1091,7 +1089,6 @@ public class MainController implements Initializable
                     setClockData(SYnergy.getInitialParts().getFpuSize(), fpuSizeSet, fpuSizeGroup);
 
                     String tempStr =  SYnergy.getInitialParts().getCommunication();
-                    System.out.println(tempStr);
                     setClockData(tempStr.split("/")[0], communicationSet, communicationGroup);
 
                     if (tempStr.contains("WIFI"))
