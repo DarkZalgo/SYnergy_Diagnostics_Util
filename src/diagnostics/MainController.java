@@ -103,7 +103,7 @@ public class MainController implements Initializable
 
     Set<ToggleGroup> toggleGroupSet;
 
-    Stage diagnosesStage, fileOpenStage;
+    Stage diagnosesStage, solutionsStage, fileOpenStage;
 
     boolean completion;
     boolean darkLight = false;
@@ -721,7 +721,7 @@ public class MainController implements Initializable
     }
 
     @FXML
-    private void addDiagnoses(ActionEvent event)
+    private void addDiagnoses(ActionEvent event) throws IOException
     {
         Alert outdatedAlert;
         String alertMsg = "";
@@ -775,7 +775,6 @@ public class MainController implements Initializable
 
             Node node = (Node) event.getSource();
 
-            try {
                 diagnosesStage = new Stage();
                 SYnergy = Context.getInstance().currentClock();
                 SYnergy.setInitialParts(synergyParts);
@@ -805,25 +804,87 @@ public class MainController implements Initializable
                     @Override
                     public void handle(WindowEvent windowEvent)
                     {
-                        if (SYnergy.getDiagnoses() !=null)
+                        if (SYnergy.getDiagnoses() != null)
                         {
                             diagnosesArea.clear();
-                            //String issues = "";
+
                             SYnergy.getDiagnoses().getImageIssuesList().stream().forEach((n -> diagnosesArea.appendText(n)));
                             SYnergy.getDiagnoses().getFunctionsList().stream().forEach((n -> diagnosesArea.appendText(n)));
-
                             SYnergy.getDiagnoses().getMiscList().stream().forEach((n -> diagnosesArea.appendText(n)));
-
                             SYnergy.getDiagnoses().getOtherIssuesList().stream().forEach((n -> diagnosesArea.appendText(n)));
-
-                            //diagnosesArea.appendText(issues);
                         }
                     }
                 });
-            } catch (IOException exception)
-            {
-                exception.printStackTrace();
-            }
+        }
+    }
+
+    @FXML
+    private void addSolutions(ActionEvent event) throws IOException {
+        Alert outdatedAlert;
+        String alertMsg = "";
+        completion = isComplete();
+        FXMLLoader loader;
+
+        if (completion)
+        {
+            InitialPartsData synergyParts = new InitialPartsData(
+                    modelData.getToggleData(),
+                    readerData.getToggleData(),
+                    fpuTypeData.getToggleData(),
+                    fpuSizeData.getToggleData(),
+                    communicationData.getToggleData(),
+                    coreboardData.getToggleData(),
+                    motherboardData.getToggleData(),
+                    sdCardData.getToggleData(),
+                    batteryData.getToggleData(),
+                    interfaceData.getToggleData(),
+                    macField.getText(),
+                    imageField.getText(),
+                    versionField.getText());
+
+            Node node = (Node) event.getSource();
+
+
+                solutionsStage = new Stage();
+                SYnergy = Context.getInstance().currentClock();
+                SYnergy.setInitialParts(synergyParts);
+            loader = new FXMLLoader(getClass().getResource("solutionsWindow.fxml"));
+            Parent root = loader.load();
+
+                root.setStyle(node.getScene().getRoot().getStyle());
+                solutionsStage.setTitle("Solutions");
+                solutionsStage.setScene(new Scene(root, 615, 460));
+                solutionsStage.initModality(Modality.WINDOW_MODAL);
+                solutionsStage.initStyle(StageStyle.UNDECORATED);
+
+                Window primaryWindow = node.getScene().getWindow();
+
+                solutionsStage.initOwner(primaryWindow);
+
+                solutionsStage.setX(primaryWindow.getX() + 200);
+                solutionsStage.setY(primaryWindow.getY() + 100);
+
+                solutionsStage.setResizable(false);
+
+                solutionsStage.show();
+                solutionsStage.setOnHiding(new EventHandler<WindowEvent>()
+                {
+                    @Override
+                    public void handle(WindowEvent windowEvent)
+                    {
+                        if (SYnergy.getSolutions() != null)
+                        {
+                            solutionsArea.clear();
+
+                            SYnergy.getSolutions().getImageSolutionsList().stream().forEach((n -> solutionsArea.appendText(n)));
+                            SYnergy.getSolutions().getReplacedHardwareList().stream().forEach((n -> solutionsArea.appendText(n)));
+                            SYnergy.getSolutions().getReplacedCosmeticsList().stream().forEach((n -> solutionsArea.appendText(n)));
+                            SYnergy.getSolutions().getOtherIssuesList().stream().forEach((n -> solutionsArea.appendText(n)));
+                        }
+                    }
+                });
+
+
         }
     }
 
@@ -862,11 +923,17 @@ public class MainController implements Initializable
         String netBoard = "N/A";
         String lithium = "N/A";
         String quantity = "";
+
         Date caseDate;
 
-        if (SYnergy.getCaseData() !=null)
+        DiagnosticData diagnostics = SYnergy.getDiagnoses();
+        SolutionData solutions = SYnergy.getSolutions();
+        InitialPartsData currentParts = SYnergy.getInitialParts();
+        CaseData caseData = SYnergy.getCaseData();
+
+        if (caseData !=null)
         {
-            caseDate = simpleFormat.parse(SYnergy.getCaseData().getStartDate());
+            caseDate = simpleFormat.parse(caseData.getStartDate());
         }
         else
         {
@@ -874,7 +941,7 @@ public class MainController implements Initializable
         }
 
         SYnergy = Context.getInstance().currentClock();
-        CaseData caseData = new CaseData(
+        caseData = new CaseData(
                 reportedIssueField.getText(),
                 caseDate,
                 recvDatePicker.getValue(),
@@ -886,13 +953,20 @@ public class MainController implements Initializable
                 qtyTwoField.getText());
         SYnergy.setCaseData(caseData);
 
-        StringBuilder builder = new StringBuilder();
+        StringBuilder diagnosesBuilder = new StringBuilder();
+        StringBuilder solutionsBuilder = new StringBuilder();
 
-        SYnergy.getDiagnoses().getImageIssuesList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
-        SYnergy.getDiagnoses().getFunctionsList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
-        SYnergy.getDiagnoses().getMiscList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
-        SYnergy.getDiagnoses().getBadPartsList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
-        SYnergy.getDiagnoses().getOtherIssuesList().stream().forEach((n -> builder.append(n).append("</w:t><w:cr/><w:t>")));
+        diagnostics.getImageIssuesList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+        diagnostics.getFunctionsList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+        diagnostics.getMiscList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+        diagnostics.getBadPartsList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+        diagnostics.getOtherIssuesList().stream().forEach((n -> diagnosesBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+
+        solutions.getImageSolutionsList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+        solutions.getReplacedHardwareList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+        solutions.getReplacedCosmeticsList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+        solutions.getOtherIssuesList().stream().forEach((n -> solutionsBuilder.append(n).append("</w:t><w:cr/><w:t>")));
+
 
 
         File rmaDir = new File("./RMAs");
@@ -909,7 +983,7 @@ public class MainController implements Initializable
         {
              quantity = SYnergy.getCaseData().getQtyOne();
         }
-        String dataOutputFileName = new SimpleDateFormat("yyyy-dd-MM").format(new Date()) + "_" + custNameField.getText() + "_CAS-" + caseNumField.getText() + quantity;
+        String dataOutputFileName = new SimpleDateFormat("yyyy-dd-MM").format(new Date()) + "_" + caseData.getCustomerName() + "_CAS-" + caseData.getCaseNum() + quantity;
 
         Node node = (Node) event.getSource();
         FileChooser fileChooser = new FileChooser();
@@ -921,27 +995,27 @@ public class MainController implements Initializable
 
         HashMap wordMappings = new HashMap();
         VariablePrepare.prepare(wordMLPackage);
-        wordMappings.put("casenum", SYnergy.getCaseData().getCaseNum());
+        wordMappings.put("casenum", caseData.getCaseNum());
         wordMappings.put("qty", quantity);
-        wordMappings.put("recvdate", SYnergy.getCaseData().getReceiveDate());
-        wordMappings.put("startdate", SYnergy.getCaseData().getStartDate());
-        wordMappings.put("model", SYnergy.getInitialParts().getModel() + " " + SYnergy.getInitialParts().getFpuSize()
-                + "/" +SYnergy.getInitialParts().getReader() + "/" + SYnergy.getInitialParts().getCommunication());
-        wordMappings.put("serialnum", SYnergy.getCaseData().getSerialNum());
+        wordMappings.put("recvdate", caseData.getReceiveDate());
+        wordMappings.put("startdate", caseData.getStartDate());
+        wordMappings.put("model", currentParts.getModel() + " " + currentParts.getFpuSize()
+                + "/" + currentParts.getReader() + "/" + currentParts.getCommunication());
+        wordMappings.put("serialnum", caseData.getSerialNum());
         wordMappings.put("firmwarevers",firmwareVers);
-        wordMappings.put("reportedproblem", reportedIssueField.getText());
+        wordMappings.put("reportedproblem", caseData.getProblem());
         wordMappings.put("netboard", netBoard);
         wordMappings.put("lithium", lithium);
-        wordMappings.put("battery", SYnergy.getInitialParts().getBattery());
-        wordMappings.put("coreboard", SYnergy.getInitialParts().getCoreboard());
-        wordMappings.put("sdcard", SYnergy.getInitialParts().getSdCard());
-        wordMappings.put("motherboard", SYnergy.getInitialParts().getMotherboard());
-        wordMappings.put("interfaceboard", SYnergy.getInitialParts().getInterfaceBoard());
-        wordMappings.put("firstboot", String.join(" ",SYnergy.getDiagnoses().getTurnsOnList()));
-        wordMappings.put("diagnoses", builder);
-        wordMappings.put("solutions", "solutions");
+        wordMappings.put("battery", currentParts.getBattery());
+        wordMappings.put("coreboard", currentParts.getCoreboard());
+        wordMappings.put("sdcard", currentParts.getSdCard());
+        wordMappings.put("motherboard", currentParts.getMotherboard());
+        wordMappings.put("interfaceboard", currentParts.getInterfaceBoard());
+        wordMappings.put("firstboot", String.join(" ",diagnostics.getTurnsOnList()));
+        wordMappings.put("diagnoses", diagnosesBuilder);
+        wordMappings.put("solutions", solutionsBuilder);
         wordMappings.put("partsreplaced", "parts replaced");
-        wordMappings.put("initials", SYnergy.getCaseData().getInitials());
+        wordMappings.put("initials", caseData.getInitials());
 
         wordMLPackage.getMainDocumentPart().variableReplace(wordMappings);
 

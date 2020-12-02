@@ -3,24 +3,49 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="diagnostics.SolutionsController">
+<AnchorPane prefHeight="460.0" prefWidth="640.0" xmlns="http://javafx.com/javafx/10.0.2-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="diagnostics.SolutionsController">
    <children>
-      <CheckBox fx:id="readerBox" layoutX="14.0" layoutY="14.0" mnemonicParsing="false" text="Replaced Card Reader" />
-      <CheckBox fx:id="fpuReaderBox" layoutX="200.0" layoutY="14.0" mnemonicParsing="false" text="Replaced FPU Reader" />
-      <CheckBox fx:id="lcdBox" layoutX="391.0" layoutY="14.0" mnemonicParsing="false" text="Replaced LCD" />
-      <CheckBox fx:id="reimagedBox" layoutX="14.0" layoutY="49.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="254.0" text="Reimaged given SD card to" />
-      <TextField fx:id="givenSDImageField" layoutX="222.0" layoutY="46.0" />
-      <CheckBox fx:id="reinstalledBox" layoutX="14.0" layoutY="109.0" mnemonicParsing="false" text="Reinstalled clock with given SD card" />
+      <CheckBox fx:id="reimagedGivenSDBox" layoutX="15.0" layoutY="17.0" mnemonicParsing="false" prefHeight="18.0" prefWidth="254.0" text="Reimaged given SD card to" />
+      <TextField fx:id="givenSDImageField" layoutX="223.0" layoutY="14.0" />
+      <CheckBox fx:id="reflashedKeypadBox" layoutX="15.0" layoutY="77.0" mnemonicParsing="false" text="Reflashed Keypad to version 11" />
+      <CheckBox fx:id="newImagedBox" layoutX="15.0" layoutY="47.0" mnemonicParsing="false" text="Imaged new " />
+      <TextField fx:id="sdTypeField" layoutX="123.0" layoutY="44.0" prefHeight="26.0" prefWidth="69.0" />
+      <CheckBox fx:id="reflashedCoreboardBox" layoutX="309.0" layoutY="77.0" mnemonicParsing="false" text="Reflashed Coreboard" />
+      <TextField fx:id="newSDImageField" layoutX="271.0" layoutY="44.0" />
+      <Label fx:id="newImagedLabelOne" layoutX="199.0" layoutY="49.0" text="SD card to" />
+      <Label fx:id="newImagedLabelTwo" layoutX="450.0" layoutY="49.0" text="image and installed to clock" />
+      <Label fx:id="reimagedLabel" layoutX="402.0" layoutY="18.0" text="image and installed to clock" />
+      <Separator layoutY="102.0" prefWidth="640.0" />
+      <CheckBox fx:id="replacedCoreboardBox" layoutX="15.0" layoutY="112.0" mnemonicParsing="false" text="Replaced Coreboard" />
+      <CheckBox fx:id="replacedMotherboardBox" layoutX="210.0" layoutY="112.0" mnemonicParsing="false" text="Replaced Motherboard" />
+      <CheckBox fx:id="replacedPOEBox" layoutX="15.0" layoutY="143.0" mnemonicParsing="false" text="Replaced POE Module" />
+      <CheckBox fx:id="replacedKeypadBoardBox" layoutX="210.0" layoutY="143.0" mnemonicParsing="false" text="Replaced Keypad Board" />
+      <CheckBox fx:id="replacedFPUBoardBox" layoutX="405.0" layoutY="143.0" mnemonicParsing="false" text="Replaced FPU Board" />
+      <CheckBox fx:id="replacedInterfaceBoardBox" layoutX="15.0" layoutY="173.0" mnemonicParsing="false" text="Replaced Interface Board" />
+      <CheckBox fx:id="replacedBatteryBackupBox" layoutX="210.0" layoutY="173.0" mnemonicParsing="false" text="Replaced Battery Backup" />
+      <CheckBox fx:id="replacedFPUSensorBox" layoutX="405.0" layoutY="173.0" mnemonicParsing="false" text="Replaced FPU Sensor" />
+      <CheckBox fx:id="replacedLCDBox" layoutX="405.0" layoutY="112.0" mnemonicParsing="false" text="Replaced LCD" />
+      <CheckBox fx:id="replacedFrontCaseBox" layoutX="15.0" layoutY="235.0" mnemonicParsing="false" text="Replaced Front Case" />
+      <Separator layoutY="225.0" prefWidth="640.0" />
+      <CheckBox fx:id="replacedCardReaderBox" layoutX="14.0" layoutY="200.0" mnemonicParsing="false" text="Replaced Card Reader" />
+      <CheckBox fx:id="replacedBackCaseBox" layoutX="210.0" layoutY="235.0" mnemonicParsing="false" text="Replaced Back Case" />
+      <CheckBox fx:id="replacedSidePanelBox" layoutX="405.0" layoutY="235.0" mnemonicParsing="false" text="Replaced Side Panel" />
+      <CheckBox fx:id="replacedKeycapsBox" layoutX="15.0" layoutY="265.0" mnemonicParsing="false" text="Replaced Keycaps" />
+      <CheckBox fx:id="replacedUSBCoverBox" layoutX="210.0" layoutY="265.0" mnemonicParsing="false" text="Replaced USB Cover" />
+      <CheckBox fx:id="replacedLCDWindowBox" layoutX="405.0" layoutY="265.0" mnemonicParsing="false" text="Replaced LCD Window" />
+      <CheckBox fx:id="replacedInterfaceRibbonBox" layoutX="210.0" layoutY="200.0" mnemonicParsing="false" text="Replaced IB Ribbon Cable" />
+      <CheckBox fx:id="replacedMotherboardRibbonBox" layoutX="406.0" layoutY="200.0" mnemonicParsing="false" text="Replaced MB Ribbon Cable" />
 
-      <CheckBox fx:id="newImagedBox" layoutX="14.0" layoutY="79.0" mnemonicParsing="false" text="Imaged new " />
-      <TextField fx:id="sdTypeField" layoutX="123.0" layoutY="76.0" prefHeight="26.0" prefWidth="69.0" />
-      <CheckBox layoutX="14.0" layoutY="170.0" mnemonicParsing="false" text="CheckBox" />
-      <Separator layoutY="39.0" prefWidth="600.0" />
-
-      <TextField fx:id="newSDImageField" layoutX="270.0" layoutY="76.0" />
-
-      <Label fx:id="newImagedLabelOne" layoutX="198.0" layoutY="81.0" text="SD card to" />
-      <Label fx:id="newImagedLabelTwo" layoutX="449.0" layoutY="81.0" text="and installed to clock" />
-      <Label fx:id="reimagedLabel" layoutX="401.0" layoutY="50.0" text="and installed to clock" />
+      <CheckBox fx:id="other1Box" layoutX="15.0" layoutY="310.0" mnemonicParsing="false" text="Other: " />
+      <TextField fx:id="other1Field" layoutX="86.0" layoutY="306.0" prefHeight="26.0" prefWidth="509.0" />
+      <CheckBox fx:id="other2Box" layoutX="15.0" layoutY="340.0" mnemonicParsing="false" text="Other:" />
+      <TextField fx:id="other2Field" layoutX="86.0" layoutY="336.0" prefHeight="26.0" prefWidth="509.0" />
+      <CheckBox fx:id="other3Box" layoutX="15.0" layoutY="370.0" mnemonicParsing="false" text="Other:" />
+      <TextField fx:id="other3Field" layoutX="86.0" layoutY="366.0" prefHeight="26.0" prefWidth="509.0" />
+      <CheckBox fx:id="other4Box" layoutX="15.0" layoutY="400.0" mnemonicParsing="false" text="Other:" />
+      <TextField fx:id="other4Field" layoutX="86.0" layoutY="396.0" prefHeight="26.0" prefWidth="509.0" />
+      <Separator layoutY="290.0" prefWidth="640.0" />
+      <Button layoutX="140.0" layoutY="429.0" mnemonicParsing="false" onAction="#sendToMain" prefWidth="63.0" text="OK" />
+      <Button layoutX="383.0" layoutY="429.0" mnemonicParsing="false" onAction="#cancelToMain" prefWidth="63.0" text="Cancel" />
    </children>
 </AnchorPane>

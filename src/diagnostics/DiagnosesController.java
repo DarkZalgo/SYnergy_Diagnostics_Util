@@ -12,7 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-import java.lang.reflect.Array;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -23,7 +22,7 @@ public class DiagnosesController implements Initializable
     @FXML CheckBox readerFunctionBox, fpuFunctionBox, keypadFunctionBox;
     @FXML CheckBox fadedLCDBox, brokenLCDBox, missingUSBCoverBox, backCaseBox, frontCaseBox, sidePanelBox, keyCapsDamagedBox, windowDamagedBox, keypadIncorrectVersionBox;
     @FXML CheckBox noSDReadBox, error117Box, incorrectVersBox, corruptedImageBox;
-    @FXML CheckBox badCoreboardBox, badMotherboardBox, badPOEBox, badKeypadBoardBox, damagedTapeBox, badInterfaceBoardBox, badBatteryBox;
+    @FXML CheckBox badCoreboardBox, badMotherboardBox, badPOEBox, badKeypadBoardBox, badInterfaceRibbonBox,badMotherboardRibbonBox, badInterfaceBoardBox, badBatteryBox;
     @FXML CheckBox outdatedBatteryBox, outdatedInterfaceBoardBox;
     @FXML CheckBox other1Box, other2Box, other3Box, other4Box;
 
@@ -33,11 +32,14 @@ public class DiagnosesController implements Initializable
 
     TimeClock SYnergy;
 
-    DiagnosticData diagnoses;
+
+
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
     {
         SYnergy = Context.getInstance().currentClock();
+        DiagnosticData diagnoses = SYnergy.getDiagnoses();
         currentParts = SYnergy.getInitialParts();
 
         other1Field.setVisible(false);
@@ -102,7 +104,7 @@ public class DiagnosesController implements Initializable
     {
         boolean isOtherComplete = true;
         String errorMsg = "";
-        System.out.println(other1Field.getText().length());
+
         if(other1Box.isSelected() && other1Field.getText().length() == 0)
         {
             isOtherComplete = false;
@@ -135,7 +137,7 @@ public class DiagnosesController implements Initializable
         return isOtherComplete;
     }
 
-    private void setDiagnoses()
+    private DiagnosticData createDiagnoses()
     {
         ArrayList<String> turnsOnList = new ArrayList<>();
         ArrayList<String> functionsList = new ArrayList<>();
@@ -157,7 +159,7 @@ public class DiagnosesController implements Initializable
         if (blackScreenBox.isSelected())
             turnsOnList.add("goes to black screen.");
         if (fullLoadBox.isSelected())
-            turnsOnList.add("Fully loads " + currentParts.getVersion() + " " + currentParts.getImage());
+            turnsOnList.add("fully loads " + currentParts.getVersion() + " " + currentParts.getImage() + " image");
 
         if (readerFunctionBox.isVisible() && !readerFunctionBox.isSelected())
             functionsList.add(currentParts.getReader() + " reader functions\n");
@@ -209,8 +211,10 @@ public class DiagnosesController implements Initializable
             badPartsList.add("Bad POE module");
         if (badKeypadBoardBox.isSelected())
             badPartsList.add("Bad Keypad Board");
-        if (damagedTapeBox.isSelected())
-            badPartsList.add("POE screws/leads breaking through electrical tape");
+        if (badInterfaceRibbonBox.isSelected())
+            badPartsList.add("Bad motherboard to interface board ribbon cable");
+        if (badMotherboardRibbonBox.isSelected())
+            badPartsList.add("Bad motherboard to keypad board ribbon cable");
         if (badInterfaceBoardBox.isSelected())
             badPartsList.add("Bad " + SYnergy.getInitialParts().getInterfaceBoard() + " interface board");
         if (badBatteryBox.isSelected() && !outdatedBatteryBox.isSelected())
@@ -221,15 +225,15 @@ public class DiagnosesController implements Initializable
             badPartsList.add("Jumper Old Clasp interface board is outdated");
 
         if (other1Box.isSelected())
-            otherIssuesList.add(other1Field.getText());
+            otherIssuesList.add(other1Field.getText() + "\n");
         if (other2Box.isSelected())
-            otherIssuesList.add(other2Field.getText());
+            otherIssuesList.add(other2Field.getText() + "\n");
         if (other3Box.isSelected())
-            otherIssuesList.add(other3Field.getText());
+            otherIssuesList.add(other3Field.getText() + "\n");
         if (other4Box.isSelected())
-            otherIssuesList.add(other4Field.getText());
+            otherIssuesList.add(other4Field.getText() + "\n");
 
-        diagnoses = new DiagnosticData(turnsOnList, functionsList, miscList, imageIssuesList, badPartsList, otherIssuesList);
+        return new DiagnosticData(turnsOnList, functionsList, miscList, imageIssuesList, badPartsList, otherIssuesList);
     }
 
     @FXML
@@ -237,8 +241,8 @@ public class DiagnosesController implements Initializable
     {
         if(isOtherComplete())
         {
-            setDiagnoses();
-            Context.getInstance().currentClock().setDiagnoses(diagnoses);
+
+            Context.getInstance().currentClock().setDiagnoses(createDiagnoses());
 
             Node node = (Node) event.getSource();
             Stage curStage = (Stage) node.getScene().getWindow();

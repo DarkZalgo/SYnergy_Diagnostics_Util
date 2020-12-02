@@ -39,9 +39,9 @@
             <CheckBox fx:id="badMotherboardBox" layoutX="143.0" layoutY="257.0" mnemonicParsing="false" text="Bad Motherboard" />
             <CheckBox fx:id="badPOEBox" layoutX="286.0" layoutY="257.0" mnemonicParsing="false" text="Bad POE Module" />
             <CheckBox fx:id="badKeypadBoardBox" layoutX="425.0" layoutY="257.0" mnemonicParsing="false" text="Bad Keypad Board" />
-            <CheckBox fx:id="damagedTapeBox" layoutX="14.0" layoutY="283.0" mnemonicParsing="false" text="Damaged POE Electrical Tape" />
-            <CheckBox fx:id="badInterfaceBoardBox" layoutX="241.0" layoutY="283.0" mnemonicParsing="false" text="Bad Interface Board" />
-            <CheckBox fx:id="badBatteryBox" layoutX="408.0" layoutY="283.0" mnemonicParsing="false" text="Bad Battery Backup" />
+            <CheckBox fx:id="badInterfaceRibbonBox" layoutX="14.0" layoutY="283.0" mnemonicParsing="false" text="Bad IB Ribbon" />
+            <CheckBox fx:id="badInterfaceBoardBox" layoutX="296.0" layoutY="283.0" mnemonicParsing="false" text="Bad Interface Board" />
+            <CheckBox fx:id="badBatteryBox" layoutX="463.0" layoutY="283.0" mnemonicParsing="false" text="Bad Battery Backup" />
             <Separator layoutY="308.0" prefWidth="620.0" />
             <CheckBox fx:id="outdatedBatteryBox" layoutX="14.0" layoutY="318.0" mnemonicParsing="false" text="Outdated Battery Backup" />
             <CheckBox fx:id="outdatedInterfaceBoardBox" layoutX="212.0" layoutY="318.0" mnemonicParsing="false" text="Outdated Interface Board" />
@@ -54,8 +54,10 @@
             <TextField fx:id="other3Field" layoutX="87.0" layoutY="419.0" prefHeight="26.0" prefWidth="509.0" />
             <CheckBox fx:id="other4Box" layoutX="16.0" layoutY="453.0" mnemonicParsing="false" text="Other:" />
             <TextField fx:id="other4Field" layoutX="87.0" layoutY="449.0" prefHeight="26.0" prefWidth="509.0" />
-            <Button fx:id="okBtn" layoutX="127.0" layoutY="482.0" mnemonicParsing="false" onAction="#sendToMain" prefWidth="62.0" text="OK" />
-            <Button fx:id="cancelBtn" layoutX="377.0" layoutY="482.0" mnemonicParsing="false" onAction="#cancelToMain" text="Cancel" />
+            <Button fx:id="okBtn" layoutX="127.0" layoutY="482.0" mnemonicParsing="false" onAction="#sendToMain" prefWidth="63.0" text="OK" />
+            <Button fx:id="cancelBtn" layoutX="377.0" layoutY="482.0" mnemonicParsing="false" onAction="#cancelToMain" prefWidth="63.0" text="Cancel" />
+            <CheckBox fx:id="shieldedRibbonBox" layoutX="408.0" layoutY="318.0" mnemonicParsing="false" text="Shielded Ribbon Cable" />
+            <CheckBox fx:id="badMotherboardRibbonBox" layoutX="156.0" layoutY="283.0" mnemonicParsing="false" text="Bad MB Ribbon" />
 
          </children></Pane>
       <ComboBox layoutX="-224.0" layoutY="1.0" prefWidth="150.0" />

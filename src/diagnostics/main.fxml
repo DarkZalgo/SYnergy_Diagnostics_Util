@@ -86,7 +86,7 @@
                         <TextField fx:id="versionField" layoutX="686.0" layoutY="560.0" prefHeight="26.0" prefWidth="142.0" />
                         <Label fx:id="connectionLabel" layoutX="43.0" layoutY="328.0" text="Enter Info" />
                         <Button fx:id="diagnosesBtn" layoutX="230.5" layoutY="558.0" mnemonicParsing="false" onAction="#addDiagnoses" prefWidth="115.4" text="Diagnoses" />
-                        <Button fx:id="solutionsBtn" layoutX="414.5" layoutY="558.0" mnemonicParsing="false" prefWidth="115.4" text="Solutions" />
+                        <Button fx:id="solutionsBtn" layoutX="414.5" layoutY="558.0" mnemonicParsing="false" onAction="#addSolutions" prefWidth="115.4" text="Solutions" />
                         <Label layoutX="721.0" layoutY="14.0" text="Communcation" />
                         <Separator layoutY="259.0" prefHeight="4.0" prefWidth="850.0" />
                         <Label layoutX="234.0" layoutY="137.0" text="Motherboard Type" />
