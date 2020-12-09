@@ -17,6 +17,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="shade" />
+        <module name="SYnergy_Diagnostics" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="8">

@@ -72,7 +72,7 @@
                         <RadioButton fx:id="sshRadio" layoutX="26.0" layoutY="298.0" mnemonicParsing="false" text="SSH" />
                         <RadioButton fx:id="serialRadio" layoutX="94.0" layoutY="298.0" mnemonicParsing="false" text="Serial" />
                         <TextField fx:id="connectionField" layoutX="33.0" layoutY="347.0" prefHeight="26.0" prefWidth="122.0" />
-                        <Button fx:id="connectBtn" layoutX="33.0" layoutY="392.0" mnemonicParsing="false" text="Get Information" />
+                        <Button fx:id="connectBtn" layoutX="33.0" layoutY="392.0" mnemonicParsing="false" onAction="#getSSHInfo" text="Get Information" />
                         <TextField fx:id="reportedIssueField" layoutX="686.0" layoutY="272.0" prefHeight="26.0" prefWidth="148.0" />
                         <DatePicker fx:id="recvDatePicker" layoutX="686.0" layoutY="304.0" prefHeight="26.0" prefWidth="123.0" />
                         <TextField fx:id="custNameField" layoutX="686.0" layoutY="336.0" prefWidth="142.0" />
@@ -102,7 +102,7 @@
                         <Button layoutX="5.0" layoutY="455.0" mnemonicParsing="false" onAction="#writeToFile" prefWidth="88.4" text="Save" />
                         <Button fx:id="darkModeBtn" layoutX="5.0" layoutY="497.0" mnemonicParsing="false" onAction="#darkMode" prefWidth="88.4" text="Dark Mode" />
                         <Button layoutX="99.0" layoutY="497.0" mnemonicParsing="false" prefWidth="88.4" text="Misc." />
-                        <Button layoutX="52.0" layoutY="539.0" mnemonicParsing="false" onAction="#refreshAll" prefWidth="88.4" text="Clear" />
+                        <Button fx:id="clearBtn" layoutX="52.0" layoutY="539.0" mnemonicParsing="false" onAction="#refreshAll" prefWidth="88.4" text="Clear" />
                         <Button fx:id="openBtn" layoutX="99.0" layoutY="455.0" mnemonicParsing="false" onAction="#readFromFile" prefWidth="88.4" text="Open" />
                         <TextArea fx:id="diagnosesArea" layoutX="197.0" layoutY="264.0" prefHeight="287.0" prefWidth="182.0" />
                         <TextArea fx:id="solutionsArea" layoutX="381.0" layoutY="264.0" prefHeight="287.0" prefWidth="184.0" />
@@ -113,6 +113,7 @@
                         <Label layoutX="624.0" layoutY="469.0" text="Quantity" />
 
                         <Label layoutX="582.0" layoutY="277.0" text="Reported Issue" />
+                        <ComboBox fx:id="connectionComboBox" layoutX="33.0" layoutY="347.0" prefWidth="122.0" />
                      </children>
                   </Pane>
                </content>

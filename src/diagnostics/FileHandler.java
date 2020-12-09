@@ -20,22 +20,20 @@ public class FileHandler
 
     public void saveSYObject(TimeClock clock, String fileName) throws IOException
     {
-        fileName = fileName + ".saclock";
-        File outPutDir = new File("." + File.separator+"data");
+        fileName = fileName + ".syclock";
+        File outPutDir = new File("data");
         if (!outPutDir.exists())
         {
             outPutDir.mkdir();
         }
 
-        System.out.println("Starting save operation for " +fileName);
-        FileOutputStream sacOutStream = new FileOutputStream(new File("." + File.separator+"data" + File.separator + fileName));
+        FileOutputStream sacOutStream = new FileOutputStream(new File("data" + File.separator + fileName));
         ObjectOutputStream clockOutStream = new ObjectOutputStream(sacOutStream);
 
         clockOutStream.writeObject(clock);
 
         clockOutStream.close();
         sacOutStream.close();
-        System.out.println("Successfully saved " + fileName);
     }
 
     public File getResourceAsFile(String resourcePath)

@@ -1,5 +1,6 @@
 package diagnostics;
 
+import com.fazecast.jSerialComm.SerialPort;
 import javafx.beans.Observable;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -13,6 +14,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.Stage;
 import org.apache.commons.io.FileUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -24,10 +27,13 @@ import java.util.ResourceBundle;
 
 public class FileOpenerController implements Initializable
 {
-    @FXML ListView rmaListView;
     @FXML TableView rmaTableView;
+
     @FXML TableColumn dateColumn, caseNumColumn, customerNameColumn, serialNumColumn, clockTypeColumn;
+
     TimeClock clock;
+
+    private static final Logger logger = LoggerFactory.getLogger(FileOpenerController.class);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)
@@ -39,6 +45,9 @@ public class FileOpenerController implements Initializable
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
+
+        for (SerialPort port : SerialPort.getCommPorts())
+        System.out.println(port);
     }
 
 
@@ -71,10 +80,16 @@ public class FileOpenerController implements Initializable
 
     public void readClocks() throws IOException, ClassNotFoundException
     {
-        File dataDirectory = new File("." + File.separator + "data");
+        File dataDirectory = new File("data");
+        logger.info("Checking for data directory");
         if(!dataDirectory.exists())
         {
+            logger.info("Data directory doesn't exist. Creating folder at " + dataDirectory.getAbsolutePath());
             dataDirectory.mkdir();
+        }
+        else
+        {
+            logger.info("RMA directory exists at " + dataDirectory.getAbsolutePath());
         }
         dateColumn.setCellValueFactory(new PropertyValueFactory<TimeClock, String>("date"));
         caseNumColumn.setCellValueFactory(new PropertyValueFactory<TimeClock, String>("caseNum"));
@@ -99,8 +114,9 @@ public class FileOpenerController implements Initializable
         while (savedFiles.hasNext())
         {
             File temp = (File) savedFiles.next();
-            if (temp.getName().substring(temp.getName().length() - 8).equals(".saclock"))
+            if (temp.getName().substring(temp.getName().length() - 8).equals(".syclock"))
             {
+                logger.info("Loading " + temp.getName());
                 clocks.add(handler.readSYObject(temp.getPath()));
             }
         }

@@ -1,5 +1,6 @@
 package diagnostics;
 
+import com.jcraft.jsch.JSchException;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
@@ -15,23 +16,16 @@ import javafx.scene.layout.Region;
 import javafx.stage.*;
 
 import java.io.*;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
-import org.apache.commons.lang3.StringUtils;
 import org.docx4j.Docx4J;
 import org.docx4j.model.datastorage.migration.VariablePrepare;
-import org.docx4j.openpackaging.exceptions.Docx4JException;
 import org.docx4j.openpackaging.packages.WordprocessingMLPackage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.swing.*;
-import javax.swing.text.DateFormatter;
 
 public class MainController implements Initializable
 {
@@ -47,7 +41,7 @@ public class MainController implements Initializable
 
     @FXML Label connectionLabel, qtyOfLabel;
 
-    @FXML Button connectBtn, diagnosesBtn, solutionsBtn;
+    @FXML Button connectBtn, diagnosesBtn, solutionsBtn, clearBtn;
 
     @FXML RadioButton SY_2416, SY_A20, SY_X;
     @FXML RadioButton barcodeReader, hidReader, iClassReader, magneticReader, proximityReader, noneReader, mifareReader;
@@ -60,6 +54,8 @@ public class MainController implements Initializable
     @FXML RadioButton delkinRadio, noneCardRadio, otherCardRadio;
     @FXML RadioButton blueBattery, silverBattery, noneBattery;
     @FXML RadioButton switchNoClasp, switchNewClasp, jumperNewClasp, jumperOldClasp;
+
+    @FXML ComboBox connectionComboBox;
 
     @FXML DatePicker recvDatePicker;
 
@@ -105,14 +101,15 @@ public class MainController implements Initializable
 
     Stage diagnosesStage, solutionsStage, fileOpenStage;
 
-    boolean completion;
     boolean darkLight = false;
 
     TimeClock SYnergy;
 
-    Logger logger = LoggerFactory.getLogger("Log");
+    private static final Logger logger = LoggerFactory.getLogger(MainController.class);
 
-    FileHandler handler = new FileHandler();
+    FileHandler fileHandler = new FileHandler();
+    SerialHandler serialHandler = new SerialHandler();
+    SSHHandler SSHHandler;
 
     SimpleDateFormat simpleFormat = new SimpleDateFormat("MM/dd/yyyy");
 
@@ -153,10 +150,13 @@ public class MainController implements Initializable
 
         diagnosesArea.setEditable(false);
         solutionsArea.setEditable(false);
+        otherCardField.setDisable(true);
 
         rmaPane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
 
         connectionLabel.setVisible(false);
+        connectionField.setVisible(false);
+        connectionComboBox.setVisible(false);
 
         for(RadioButton modelRadio : modelSet)
         {
@@ -237,6 +237,9 @@ public class MainController implements Initializable
                     A20cBoard.setVisible(true);
                     A20mBoard.setVisible(true);
 
+                   // A20mBoard.fire();
+                   // A20cBoard.fire();
+
                     sdBoard.setVisible(false);
                     threeWire.setVisible(false);
                     twoWire.setVisible(false);
@@ -253,6 +256,9 @@ public class MainController implements Initializable
                 {
                     A20cBoard.setVisible(false);
                     A20mBoard.setVisible(false);
+
+                    A20cBoard.setSelected(false);
+                    A20mBoard.setSelected(false);
 
                     sdBoard.setVisible(true);
                     threeWire.setVisible(true);
@@ -383,12 +389,20 @@ public class MainController implements Initializable
                     connectionLabel.setText("Enter IP Address");
                     connectionLabel.setVisible(true);
 
+                    connectionComboBox.setVisible(false);
+                    connectionField.setVisible(true);
+
                     connectionData.setToggleData("SSH");
                 }
                 else if(connectionGroup.getSelectedToggle() == serialRadio)
                 {
-                    connectionLabel.setText("Enter COM Port");
+                    connectionLabel.setText("Select COM Port");
                     connectionLabel.setVisible(true);
+
+                    connectionField.setVisible(false);
+                    connectionComboBox.setItems(serialHandler.getPorts());
+                    connectionComboBox.setVisible(true);
+
 
                     connectionData.setToggleData("COM");
                 }
@@ -456,7 +470,15 @@ public class MainController implements Initializable
                     RadioButton tmpBtn = (RadioButton) sdCardGroup.getSelectedToggle();
 
                     sdCardData.setToggled(true);
-                    sdCardData.setToggleData(tmpBtn.getText());
+                    if (otherCardRadio.isSelected())
+                    {
+                        otherCardField.setDisable(false);
+                    }
+                    else
+                    {
+                        sdCardData.setToggleData(tmpBtn.getText());
+                        otherCardField.setDisable(true);
+                    }
 
                     tmpBtn = null;
                 }
@@ -724,10 +746,8 @@ public class MainController implements Initializable
     {
         Alert outdatedAlert;
         String alertMsg = "";
-        completion = isComplete();
+        setInitialPartsData();
 
-        if (completion)
-        {
             if (gprsBox.isSelected())
             {
                 communicationData.setToggleData(communicationData.getToggleData() + "/GPRS");
@@ -757,26 +777,10 @@ public class MainController implements Initializable
             }
 
 
-            InitialPartsData synergyParts = new InitialPartsData(
-                    modelData.getToggleData(),
-                    readerData.getToggleData(),
-                    fpuTypeData.getToggleData(),
-                    fpuSizeData.getToggleData(),
-                    communicationData.getToggleData(),
-                    coreboardData.getToggleData(),
-                    motherboardData.getToggleData(),
-                    sdCardData.getToggleData(),
-                    batteryData.getToggleData(),
-                    interfaceData.getToggleData(),
-                    macField.getText(),
-                    imageField.getText(),
-                    versionField.getText());
-
             Node node = (Node) event.getSource();
 
                 diagnosesStage = new Stage();
-                SYnergy = Context.getInstance().currentClock();
-                SYnergy.setInitialParts(synergyParts);
+
 
                 FXMLLoader loader = new FXMLLoader(getClass().getResource("diagnosesWindow.fxml"));
                 Parent root = loader.load();
@@ -814,77 +818,70 @@ public class MainController implements Initializable
                         }
                     }
                 });
-        }
+
     }
 
     @FXML
-    private void addSolutions(ActionEvent event) throws IOException {
-        Alert outdatedAlert;
-        String alertMsg = "";
-        completion = isComplete();
+    private void addSolutions(ActionEvent event) throws IOException
+    {
         FXMLLoader loader;
 
-        if (completion)
+        setInitialPartsData();
+        Node node = (Node) event.getSource();
+
+        solutionsStage = new Stage();
+
+        loader = new FXMLLoader(getClass().getResource("solutionsWindow.fxml"));
+        Parent root = loader.load();
+
+        root.setStyle(node.getScene().getRoot().getStyle());
+        solutionsStage.setTitle("Solutions");
+        solutionsStage.setScene(new Scene(root, 615, 460));
+        solutionsStage.initModality(Modality.WINDOW_MODAL);
+        solutionsStage.initStyle(StageStyle.UNDECORATED);
+
+        Window primaryWindow = node.getScene().getWindow();
+
+        solutionsStage.initOwner(primaryWindow);
+
+        solutionsStage.setX(primaryWindow.getX() + 200);
+        solutionsStage.setY(primaryWindow.getY() + 100);
+
+        solutionsStage.setResizable(false);
+
+        solutionsStage.show();
+        solutionsStage.setOnHiding(new EventHandler<WindowEvent>()
         {
-            InitialPartsData synergyParts = new InitialPartsData(
-                    modelData.getToggleData(),
-                    readerData.getToggleData(),
-                    fpuTypeData.getToggleData(),
-                    fpuSizeData.getToggleData(),
-                    communicationData.getToggleData(),
-                    coreboardData.getToggleData(),
-                    motherboardData.getToggleData(),
-                    sdCardData.getToggleData(),
-                    batteryData.getToggleData(),
-                    interfaceData.getToggleData(),
-                    macField.getText(),
-                    imageField.getText(),
-                    versionField.getText());
-
-            Node node = (Node) event.getSource();
-
-
-                solutionsStage = new Stage();
-                SYnergy = Context.getInstance().currentClock();
-                SYnergy.setInitialParts(synergyParts);
-            loader = new FXMLLoader(getClass().getResource("solutionsWindow.fxml"));
-            Parent root = loader.load();
-
-                root.setStyle(node.getScene().getRoot().getStyle());
-                solutionsStage.setTitle("Solutions");
-                solutionsStage.setScene(new Scene(root, 615, 460));
-                solutionsStage.initModality(Modality.WINDOW_MODAL);
-                solutionsStage.initStyle(StageStyle.UNDECORATED);
-
-                Window primaryWindow = node.getScene().getWindow();
-
-                solutionsStage.initOwner(primaryWindow);
-
-                solutionsStage.setX(primaryWindow.getX() + 200);
-                solutionsStage.setY(primaryWindow.getY() + 100);
-
-                solutionsStage.setResizable(false);
-
-                solutionsStage.show();
-                solutionsStage.setOnHiding(new EventHandler<WindowEvent>()
+            @Override
+            public void handle(WindowEvent windowEvent)
+            {
+                if (SYnergy.getSolutions() != null)
                 {
-                    @Override
-                    public void handle(WindowEvent windowEvent)
-                    {
-                        if (SYnergy.getSolutions() != null)
-                        {
-                            solutionsArea.clear();
+                    solutionsArea.clear();
 
-                            SYnergy.getSolutions().getImageSolutionsList().stream().forEach((n -> solutionsArea.appendText(n)));
-                            SYnergy.getSolutions().getReplacedHardwareList().stream().forEach((n -> solutionsArea.appendText(n)));
-                            SYnergy.getSolutions().getReplacedCosmeticsList().stream().forEach((n -> solutionsArea.appendText(n)));
-                            SYnergy.getSolutions().getOtherIssuesList().stream().forEach((n -> solutionsArea.appendText(n)));
-                        }
-                    }
-                });
+                    SYnergy.getSolutions().getImageSolutionsList().stream().forEach((n -> solutionsArea.appendText(n)));
+                    SYnergy.getSolutions().getReplacedHardwareList().stream().forEach((n -> solutionsArea.appendText(n)));
+                    SYnergy.getSolutions().getReplacedCosmeticsList().stream().forEach((n -> solutionsArea.appendText(n)));
+                    SYnergy.getSolutions().getOtherIssuesList().stream().forEach((n -> solutionsArea.appendText(n)));
+                }
+            }
+        });
 
 
-        }
+
+    }
+
+    @FXML
+    private void getSSHInfo(ActionEvent event) throws JSchException, IOException {
+        SSHHandler = new SSHHandler("darkzalgo","192.168.1.229","7355608Ab!");
+
+        SSHHandler.connect();
+
+        versionField.setText(SSHHandler.sendOverSSH("version"));
+        imageField.setText(SSHHandler.sendOverSSH("grep url /home/admin/wbcs/conf/settings.conf"));
+        macField.setText(SSHHandler.sendOverSSH("cat /etc/mac.txt"));
+
+        SSHHandler.disconnect();
     }
 
     private void deSelectRadioSet(Set<RadioButton> radioSet, boolean isVisibile)
@@ -917,7 +914,7 @@ public class MainController implements Initializable
     @FXML
     private void writeToFile(ActionEvent event) throws Exception
     {
-        String outputFile ="RMA CAS " + caseNumField.getText() + ".docx";
+
         String firmwareVers = "N/A";
         String netBoard = "N/A";
         String lithium = "N/A";
@@ -942,6 +939,11 @@ public class MainController implements Initializable
             caseDate = new Date();
         }
 
+        if (qtyOneField.getText().length() > 0 && qtyTwoField.getText().length() > 0)
+        {
+            quantity = qtyOneField.getText() + " of " + qtyTwoField.getText();
+        }
+
         SYnergy = Context.getInstance().currentClock();
         caseData = new CaseData(
                 reportedIssueField.getText(),
@@ -955,6 +957,7 @@ public class MainController implements Initializable
                 qtyTwoField.getText());
         SYnergy.setCaseData(caseData);
 
+        String outputFile ="RMA CAS " + caseNumField.getText() + " " + quantity + ".docx";
         String dataOutputFileName = new SimpleDateFormat("yyyy-dd-MM").format(new Date()) + "_" + caseData.getCustomerName() + "_CAS-" + caseData.getCaseNum() + quantity;
         if (!isComplete())
         {
@@ -968,7 +971,7 @@ public class MainController implements Initializable
             incompleteWarning.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
             incompleteWarning.setContentText("Clock sheet incomplete.\n\nWord document will not be created.\n\nProgress so far will be saved to clock file.");
             incompleteWarning.showAndWait();
-            handler.saveSYObject(SYnergy, dataOutputFileName);
+            fileHandler.saveSYObject(SYnergy, dataOutputFileName);
             return;
         }
         StringBuilder diagnosesBuilder = new StringBuilder();
@@ -987,10 +990,16 @@ public class MainController implements Initializable
 
 
 
-        File rmaDir = new File("./RMAs");
+        File rmaDir = new File("RMAs");
+        logger.info("Checking for RMA directory");
         if (!rmaDir.exists())
         {
+            logger.info("RMA directory doesn't exist. Creating folder at " + rmaDir.getAbsolutePath());
             rmaDir.mkdir();
+        }
+        else
+        {
+            logger.info("RMA directory exists at " + rmaDir.getAbsolutePath());
         }
 
         if (SYnergy.getCaseData().getQtyTwo().length() > 0 && Integer.parseInt(SYnergy.getCaseData().getQtyTwo()) > 1)
@@ -1008,8 +1017,9 @@ public class MainController implements Initializable
         FileChooser.ExtensionFilter extFilter = new FileChooser.ExtensionFilter("Word Document Files (*.docx)","*.docx");
         fileChooser.getExtensionFilters().add(extFilter);
         fileChooser.setInitialDirectory(rmaDir);
-        WordprocessingMLPackage wordMLPackage = Docx4J.load(handler.getResourceAsFile("resources/template.docx"));
+        WordprocessingMLPackage wordMLPackage = Docx4J.load(fileHandler.getResourceAsFile("resources/template.docx"));
 
+        logger.info("Creating hashmap for docx4j word replacement");
         HashMap wordMappings = new HashMap();
         VariablePrepare.prepare(wordMLPackage);
         wordMappings.put("casenum", caseData.getCaseNum());
@@ -1024,7 +1034,7 @@ public class MainController implements Initializable
         wordMappings.put("netboard", netBoard);
         wordMappings.put("lithium", lithium);
         wordMappings.put("battery", currentParts.getBattery());
-        wordMappings.put("coreboard", currentParts.getCoreboard());
+        wordMappings.put("coreboard", currentParts. getCoreboard());
         wordMappings.put("sdcard", currentParts.getSdCard());
         wordMappings.put("motherboard", currentParts.getMotherboard());
         wordMappings.put("interfaceboard", currentParts.getInterfaceBoard());
@@ -1036,12 +1046,15 @@ public class MainController implements Initializable
         wordMLPackage.getMainDocumentPart().variableReplace(wordMappings);
 
         File rmaNotes = fileChooser.showSaveDialog(node.getScene().getWindow());
-        System.out.println("Starting save operation for" + outputFile);
+        logger.info("Starting save operation for" + outputFile);
         Docx4J.save(wordMLPackage, rmaNotes, Docx4J.FLAG_NONE);
-        System.out.println("Successfully saved " + outputFile + " at " + rmaNotes.getPath());
+        logger.info("Successfully saved " + outputFile + " at " + rmaNotes.getPath());
 
+        logger.info("Starting save operation for " + dataOutputFileName);
+        fileHandler.saveSYObject(SYnergy, dataOutputFileName);
+        logger.info("Successfully saved " + dataOutputFileName + " at " + new File(dataOutputFileName).getAbsolutePath());
 
-        handler.saveSYObject(SYnergy, dataOutputFileName);
+        clearBtn.fire();
     }
 
     @FXML
@@ -1083,13 +1096,13 @@ public class MainController implements Initializable
                     {
                         return;
                     }
-                    setClockData(SYnergy.getInitialParts().getModel(), modelSet, modelGroup);
-                    setClockData(SYnergy.getInitialParts().getReader(), readerSet, readerGroup);
-                    setClockData(SYnergy.getInitialParts().getFpuType(), fpuTypeSet, fpuTypeGroup);
-                    setClockData(SYnergy.getInitialParts().getFpuSize(), fpuSizeSet, fpuSizeGroup);
+                    loadClockData(SYnergy.getInitialParts().getModel(), modelSet, modelGroup);
+                    loadClockData(SYnergy.getInitialParts().getReader(), readerSet, readerGroup);
+                    loadClockData(SYnergy.getInitialParts().getFpuType(), fpuTypeSet, fpuTypeGroup);
+                    loadClockData(SYnergy.getInitialParts().getFpuSize(), fpuSizeSet, fpuSizeGroup);
 
                     String tempStr =  SYnergy.getInitialParts().getCommunication();
-                    setClockData(tempStr.split("/")[0], communicationSet, communicationGroup);
+                    loadClockData(tempStr.split("/")[0], communicationSet, communicationGroup);
 
                     if (tempStr.contains("WIFI"))
                     {
@@ -1102,13 +1115,13 @@ public class MainController implements Initializable
 
                     if (SYnergy.getInitialParts().getInterfaceBoard() != null)
                     {
-                        setClockData(SYnergy.getInitialParts().getInterfaceBoard(),interfaceBoardSet,interfaceGroup);
+                        loadClockData(SYnergy.getInitialParts().getInterfaceBoard(),interfaceBoardSet,interfaceGroup);
                     }
 
-                    setClockData(SYnergy.getInitialParts().getMotherboard(), motherboardSet, motherboardGroup);
-                    setClockData(SYnergy.getInitialParts().getCoreboard(), coreboardSet, coreboardGroup);
-                    setClockData(SYnergy.getInitialParts().getSdCard(), sdCardSet, sdCardGroup);
-                    setClockData(SYnergy.getInitialParts().getBattery(), batterySet, batteryGroup);
+                    loadClockData(SYnergy.getInitialParts().getMotherboard(), motherboardSet, motherboardGroup);
+                    loadClockData(SYnergy.getInitialParts().getCoreboard(), coreboardSet, coreboardGroup);
+                    loadClockData(SYnergy.getInitialParts().getSdCard(), sdCardSet, sdCardGroup);
+                    loadClockData(SYnergy.getInitialParts().getBattery(), batterySet, batteryGroup);
 
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
 
@@ -1150,16 +1163,45 @@ public class MainController implements Initializable
 
     }
 
-    private void setClockData(String data, Set<RadioButton> set, ToggleGroup group )
+    private void loadClockData(String data, Set<RadioButton> set, ToggleGroup group )
     {
         for (RadioButton tempBtn : set)
         {
             if (tempBtn.getText().equals(data))
             {
                 group.selectToggle(tempBtn);
+                ToggleData tempData = (ToggleData) group.getUserData();
+                logger.info("Loading " + tempBtn.getText() + " for " + tempData.getGroupName());
             }
         }
     }
 
+    private void setInitialPartsData()
+    {
+        if(isComplete()) {
+            SYnergy = Context.getInstance().currentClock();
+
+            if (otherCardRadio.isSelected()) {
+                if (otherCardField.getText().length() > 0) {
+                    sdCardData.setToggleData(otherCardField.getText());
+                }
+            }
+
+            SYnergy.setInitialParts(new InitialPartsData(
+                    modelData.getToggleData(),
+                    readerData.getToggleData(),
+                    fpuTypeData.getToggleData(),
+                    fpuSizeData.getToggleData(),
+                    communicationData.getToggleData(),
+                    coreboardData.getToggleData(),
+                    motherboardData.getToggleData(),
+                    sdCardData.getToggleData(),
+                    batteryData.getToggleData(),
+                    interfaceData.getToggleData(),
+                    macField.getText(),
+                    imageField.getText(),
+                    versionField.getText()));
+        }
+    }
 
 }

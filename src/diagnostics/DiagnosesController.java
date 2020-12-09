@@ -11,6 +11,8 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -32,8 +34,7 @@ public class DiagnosesController implements Initializable
 
     TimeClock SYnergy;
 
-
-
+    private static final Logger logger = LoggerFactory.getLogger(DiagnosesController.class);
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle)

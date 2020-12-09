@@ -56,6 +56,9 @@
       <element id="extracted-dir" path="/usr/share/openjfx/lib/javafx.swing.jar" path-in-jar="/" />
       <element id="extracted-dir" path="/usr/share/openjfx/lib/javafx.controls.jar" path-in-jar="/" />
       <element id="extracted-dir" path="/usr/share/openjfx/lib/javafx.graphics.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/java/jSerialComm-2.6.2.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/java/jsch-0.1.55.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="/usr/share/java/slf4j-simple-1.7.26.jar" path-in-jar="/" />
     </root>
   </artifact>
 </component>

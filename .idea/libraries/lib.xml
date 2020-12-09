@@ -5,14 +5,14 @@
       <root url="file:///usr/share/docx4j-community-8.2.4" />
       <root url="file:///usr/share/docx4j-community-8.2.4/dependencies" />
       <root url="jar:///usr/share/java/jaxb-api.jar!/" />
+      <root url="jar:///usr/share/java/jSerialComm-2.6.2.jar!/" />
+      <root url="jar:///usr/share/java/jsch-0.1.55.jar!/" />
+      <root url="jar:///usr/share/java/slf4j-simple-1.7.26.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES>
       <root url="file:///usr/share/openjfx/lib" />
     </SOURCES>
-    <excluded>
-      <root url="jar:///usr/share/docx4j-community-8.2.4/docx4j-JAXB-Internal-8.2.4.jar!/" />
-    </excluded>
     <jarDirectory url="file:///usr/share/docx4j-community-8.2.4" recursive="false" />
     <jarDirectory url="file:///usr/share/docx4j-community-8.2.4/dependencies" recursive="false" />
     <jarDirectory url="file:///usr/share/openjfx/lib" recursive="false" />
