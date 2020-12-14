@@ -1,5 +1,6 @@
 package diagnostics;
 
+import com.fazecast.jSerialComm.SerialPort;
 import com.jcraft.jsch.JSchException;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -636,6 +637,8 @@ public class MainController implements Initializable
         solutionsArea.setText("");
 
         connectionLabel.setVisible(false);
+        connectionComboBox.setVisible(false);
+        connectionField.setVisible(false);
 
         wifiCommBox.setSelected(false);
         gprsBox.setSelected(false);
@@ -872,16 +875,24 @@ public class MainController implements Initializable
     }
 
     @FXML
-    private void getSSHInfo(ActionEvent event) throws JSchException, IOException {
-        SSHHandler = new SSHHandler("darkzalgo","192.168.1.229","7355608Ab!");
+    private void getInfo(ActionEvent event) throws JSchException, IOException
+    {
+        if (sshRadio.isSelected())
+        {
+            SSHHandler = new SSHHandler("root", connectionField.getText(), "synergy");
 
-        SSHHandler.connect();
+            SSHHandler.connect();
 
-        versionField.setText(SSHHandler.sendOverSSH("version"));
-        imageField.setText(SSHHandler.sendOverSSH("grep url /home/admin/wbcs/conf/settings.conf"));
-        macField.setText(SSHHandler.sendOverSSH("cat /etc/mac.txt"));
+            versionField.setText(SSHHandler.sendOverSSH("version"));
+            //imageField.setText(SSHHandler.sendOverSSH("grep url /home/admin/wbcs/conf/settings.conf"));
+            macField.setText(SSHHandler.sendOverSSH("cat /etc/mac.txt"));
 
-        SSHHandler.disconnect();
+            SSHHandler.disconnect();
+        }
+        else if (serialRadio.isSelected())
+        {
+            serialHandler.setCommPort((SerialPort)connectionComboBox.getValue());
+        }
     }
 
     private void deSelectRadioSet(Set<RadioButton> radioSet, boolean isVisibile)

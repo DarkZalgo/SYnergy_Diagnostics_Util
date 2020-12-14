@@ -72,7 +72,7 @@
                         <RadioButton fx:id="sshRadio" layoutX="26.0" layoutY="298.0" mnemonicParsing="false" text="SSH" />
                         <RadioButton fx:id="serialRadio" layoutX="94.0" layoutY="298.0" mnemonicParsing="false" text="Serial" />
                         <TextField fx:id="connectionField" layoutX="33.0" layoutY="347.0" prefHeight="26.0" prefWidth="122.0" />
-                        <Button fx:id="connectBtn" layoutX="33.0" layoutY="392.0" mnemonicParsing="false" onAction="#getSSHInfo" text="Get Information" />
+                        <Button fx:id="connectBtn" layoutX="33.0" layoutY="392.0" mnemonicParsing="false" onAction="#getInfo" text="Get Information" />
                         <TextField fx:id="reportedIssueField" layoutX="686.0" layoutY="272.0" prefHeight="26.0" prefWidth="148.0" />
                         <DatePicker fx:id="recvDatePicker" layoutX="686.0" layoutY="304.0" prefHeight="26.0" prefWidth="123.0" />
                         <TextField fx:id="custNameField" layoutX="686.0" layoutY="336.0" prefWidth="142.0" />
